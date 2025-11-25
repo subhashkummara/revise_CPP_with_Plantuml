@@ -1,0 +1,257 @@
+@startuml OOP_Master_Diagram
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+skinparam backgroundColor #FEFEFE
+skinparam handwritten false
+skinparam roundCorner 10
+
+title Object-Oriented Programming (OOP) in C++ - Master Diagram
+
+package "OOP Fundamentals" #LightBlue {
+    
+    package "1. ENCAPSULATION" #AliceBlue {
+        class Encapsulation {
+            - private: data hiding
+            # protected: inherited access
+            + public: interface
+            --
+            + getters()
+            + setters()
+            - validateData()
+        }
+        
+        note right of Encapsulation
+            **Bundling data with methods**
+            - Hide internal state
+            - Control access via methods
+            - Data validation
+        end note
+    }
+    
+    package "2. ABSTRACTION" #Honeydew {
+        abstract class AbstractClass {
+            + {abstract} pureVirtualFunction() = 0
+            + concreteFunction()
+            # protectedMethod()
+        }
+        
+        interface IInterface {
+            + {abstract} method1() = 0
+            + {abstract} method2() = 0
+        }
+        
+        note right of IInterface
+            **Show only essential details**
+            - Hide complex implementation
+            - Pure virtual functions
+            - Abstract base classes
+        end note
+    }
+    
+    package "3. INHERITANCE" #MistyRose {
+        class BaseClass {
+            # protectedData
+            + publicMethod()
+            # protectedMethod()
+            - privateMethod()
+        }
+        
+        class DerivedClass {
+            + derivedMethod()
+            + overriddenMethod()
+        }
+        
+        class GrandChildClass {
+            + grandChildMethod()
+        }
+        
+        BaseClass <|-- DerivedClass : Single Inheritance
+        DerivedClass <|-- GrandChildClass : Multilevel
+        
+        class Animal {
+            + eat()
+            + sleep()
+        }
+        
+        class Dog {
+            + bark()
+        }
+        
+        class Cat {
+            + meow()
+        }
+        
+        Animal <|-- Dog
+        Animal <|-- Cat
+        
+        note right of BaseClass
+            **Types of Inheritance:**
+            - Single
+            - Multiple
+            - Multilevel
+            - Hierarchical
+            - Hybrid
+            
+            **Access Modes:**
+            public, protected, private
+        end note
+    }
+    
+    package "4. POLYMORPHISM" #LightYellow {
+        
+        package "Compile-Time Polymorphism" #Wheat {
+            class FunctionOverloading {
+                + add(int, int)
+                + add(double, double)
+                + add(int, int, int)
+            }
+            
+            class OperatorOverloading {
+                + operator+()
+                + operator<<()
+                + operator[]()
+            }
+            
+            note bottom of FunctionOverloading
+                **Static Binding**
+                - Same name, different parameters
+                - Resolved at compile time
+            end note
+        }
+        
+        package "Run-Time Polymorphism" #LemonChiffon {
+            class Shape {
+                + {abstract} draw() = 0
+                + {abstract} area() = 0
+                + color: string
+            }
+            
+            class Circle {
+                - radius: double
+                + draw() override
+                + area() override
+            }
+            
+            class Rectangle {
+                - width: double
+                - height: double
+                + draw() override
+                + area() override
+            }
+            
+            class Triangle {
+                - base: double
+                - height: double
+                + draw() override
+                + area() override
+            }
+            
+            Shape <|-- Circle
+            Shape <|-- Rectangle
+            Shape <|-- Triangle
+            
+            note right of Shape
+                **Dynamic Binding**
+                - Virtual functions
+                - Overriding
+                - Resolved at runtime
+                - Uses vtable
+            end note
+        }
+    }
+}
+
+package "Special OOP Concepts" #LightGreen {
+    
+    class Constructors {
+        + DefaultConstructor()
+        + ParameterizedConstructor(params)
+        + CopyConstructor(const &)
+        + MoveConstructor(&&)
+    }
+    
+    class Destructors {
+        + ~ClassName()
+        + virtual ~ClassName()
+    }
+    
+    class FriendFunction {
+        + friend returnType function()
+        + friend class ClassName
+    }
+    
+    class StaticMembers {
+        + {static} staticVariable
+        + {static} staticMethod()
+    }
+    
+    note bottom of Constructors
+        **Constructor Types:**
+        - Default (no params)
+        - Parameterized
+        - Copy (deep/shallow)
+        - Move (C++11)
+        - Delegating
+    end note
+}
+
+package "Advanced OOP Features" #LavenderBlush {
+    
+    class VirtualFunctions {
+        + virtual normalVirtual()
+        + {abstract} pureVirtual() = 0
+    }
+    
+    class MultipleInheritance {
+        note
+            Diamond Problem
+            Virtual Inheritance
+        end note
+    }
+    
+    class AbstractDataTypes {
+        + Pure Virtual Functions
+        + Cannot instantiate
+        + Interface definition
+    }
+    
+    class RAII {
+        note
+            Resource Acquisition
+            Is Initialization
+            - Constructor acquires
+            - Destructor releases
+        end note
+    }
+}
+
+package "OOP Design Principles (SOLID)" #LightCyan {
+    note as N1
+        **S** - Single Responsibility
+        **O** - Open/Closed
+        **L** - Liskov Substitution
+        **I** - Interface Segregation
+        **D** - Dependency Inversion
+    end note
+}
+
+' Relationships
+Encapsulation ..> Abstraction : Uses
+Abstraction ..> Inheritance : Enables
+Inheritance ..> Polymorphism : Enables
+Polymorphism ..> VirtualFunctions : Implements
+
+Constructors ..> Encapsulation : Part of
+Destructors ..> RAII : Implements
+
+' Legend
+legend bottom
+    |= Color |= Concept |
+    | <back:LightBlue>   </back> | Core OOP Pillars |
+    | <back:LightGreen>   </back> | Special Features |
+    | <back:LavenderBlush>   </back> | Advanced Concepts |
+    | <back:LightCyan>   </back> | Design Principles |
+endlegend
+
+footer Master OOP Diagram - C++ Programming
+
+@enduml

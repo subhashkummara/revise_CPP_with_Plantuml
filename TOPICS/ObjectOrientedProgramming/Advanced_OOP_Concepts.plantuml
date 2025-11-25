@@ -1,0 +1,494 @@
+@startuml Advanced_OOP_Concepts
+skinparam backgroundColor #FEFEFE
+skinparam classAttributeIconSize 0
+skinparam roundCorner 10
+
+title Advanced Object-Oriented Programming Concepts in C++
+
+package "1. VIRTUAL FUNCTIONS & POLYMORPHISM" #LightSkyBlue {
+    
+    abstract class Animal {
+        # name: string
+        --
+        + Animal(string)
+        + {abstract} makeSound() = 0
+        + virtual eat()
+        + virtual sleep()
+        + **virtual ~Animal()**
+    }
+    
+    class Dog {
+        - breed: string
+        --
+        + Dog(string, string)
+        + makeSound() **override**
+        + eat() **override**
+        + fetch()
+    }
+    
+    class Cat {
+        - color: string
+        --
+        + Cat(string, string)
+        + makeSound() **override**
+        + climb()
+    }
+    
+    Animal <|-- Dog
+    Animal <|-- Cat
+    
+    note right of Animal
+        **Virtual Function Features:**
+        - Enables runtime polymorphism
+        - Uses vtable (virtual table)
+        - Base class pointer → derived object
+        - **Virtual destructor is crucial!**
+        
+        **Syntax:**
+        virtual returnType functionName()
+    end note
+    
+    note bottom of Dog
+        **override keyword (C++11):**
+        - Ensures function overrides base
+        - Compile-time error if not virtual
+        - Makes code safer & readable
+    end note
+}
+
+package "2. PURE VIRTUAL FUNCTIONS & ABSTRACT CLASSES" #LightGreen {
+    
+    abstract class Shape <<interface>> {
+        # color: string
+        --
+        + {abstract} draw() = 0
+        + {abstract} calculateArea() = 0
+        + {abstract} calculatePerimeter() = 0
+        + setColor(string)
+        + getColor(): string
+    }
+    
+    abstract class Polygon {
+        # sides: int
+        --
+        + Polygon(int)
+        + {abstract} calculateArea() = 0
+        + getSides(): int
+    }
+    
+    class Rectangle {
+        - width: double
+        - height: double
+        --
+        + Rectangle(double, double)
+        + draw() override
+        + calculateArea() override
+        + calculatePerimeter() override
+    }
+    
+    class Triangle {
+        - base: double
+        - height: double
+        --
+        + Triangle(double, double)
+        + draw() override
+        + calculateArea() override
+        + calculatePerimeter() override
+    }
+    
+    class Circle {
+        - radius: double
+        --
+        + Circle(double)
+        + draw() override
+        + calculateArea() override
+        + calculatePerimeter() override
+    }
+    
+    Shape <|-- Polygon
+    Shape <|-- Circle
+    Polygon <|-- Rectangle
+    Polygon <|-- Triangle
+    
+    note top of Shape
+        **Abstract Class Rules:**
+        - Has at least 1 pure virtual function
+        - Cannot instantiate directly
+        - Must override pure virtuals in derived
+        - Can have data members
+        - Can have concrete functions
+        
+        **Pure Virtual Function:**
+        virtual void func() = 0;
+    end note
+}
+
+package "3. MULTIPLE INHERITANCE" #LightCoral {
+    
+    class IFlyable <<interface>> {
+        + {abstract} fly() = 0
+        + {abstract} land() = 0
+    }
+    
+    class ISwimmable <<interface>> {
+        + {abstract} swim() = 0
+        + {abstract} dive() = 0
+    }
+    
+    class Bird {
+        # name: string
+        --
+        + Bird(string)
+        + layEggs()
+    }
+    
+    class Duck {
+        --
+        + Duck(string)
+        + fly() override
+        + land() override
+        + swim() override
+        + dive() override
+        + quack()
+    }
+    
+    IFlyable <|.. Duck
+    ISwimmable <|.. Duck
+    Bird <|-- Duck
+    
+    note right of Duck
+        **Multiple Inheritance:**
+        class Duck : public Bird,
+                     public IFlyable,
+                     public ISwimmable
+        
+        **Benefits:**
+        - Inherit from multiple classes
+        - Compose behaviors
+        
+        **Challenges:**
+        - Diamond problem
+        - Name conflicts
+        - Complexity
+    end note
+}
+
+package "4. DIAMOND PROBLEM & VIRTUAL INHERITANCE" #LightYellow {
+    
+    class Vehicle {
+        # speed: int
+        --
+        + Vehicle(int)
+        + move()
+    }
+    
+    class LandVehicle {
+        --
+        + drive()
+    }
+    
+    class WaterVehicle {
+        --
+        + sail()
+    }
+    
+    class AmphibiousVehicle {
+        --
+        + switchMode()
+    }
+    
+    Vehicle <|-- LandVehicle : **virtual**
+    Vehicle <|-- WaterVehicle : **virtual**
+    LandVehicle <|-- AmphibiousVehicle
+    WaterVehicle <|-- AmphibiousVehicle
+    
+    note bottom of Vehicle
+        **Diamond Problem:**
+        Without virtual inheritance:
+        - Two copies of Vehicle in Amphibious
+        - Ambiguity in accessing members
+        
+        **Solution - Virtual Inheritance:**
+        class LandVehicle : 
+            **virtual** public Vehicle
+        class WaterVehicle : 
+            **virtual** public Vehicle
+        
+        Result: Only ONE Vehicle copy!
+    end note
+}
+
+package "5. FRIEND FUNCTIONS & CLASSES" #Lavender {
+    
+    class BankAccount {
+        - accountNumber: string
+        - **balance: double**
+        --
+        + BankAccount(string, double)
+        + deposit(double)
+        + withdraw(double)
+        + getBalance(): double
+        --
+        **friend class Auditor**
+        **friend void printDetails(BankAccount&)**
+    }
+    
+    class Auditor {
+        --
+        + auditAccount(BankAccount&)
+        + getSecretBalance(BankAccount&)
+    }
+    
+    BankAccount -[hidden]- Auditor
+    
+    note right of BankAccount
+        **Friend Function:**
+        - Not a member function
+        - Access private members
+        - Breaks encapsulation (use carefully!)
+        
+        **Friend Class:**
+        - All members can access private data
+        - One-way relationship
+        
+        **Syntax:**
+        friend void func(Class&);
+        friend class ClassName;
+    end note
+}
+
+package "6. STATIC MEMBERS" #PaleGreen {
+    
+    class Counter {
+        - **{static} count: int**
+        - id: int
+        --
+        + Counter()
+        + ~Counter()
+        + **{static} getCount(): int**
+        + **{static} resetCount()**
+        - **{static} incrementCount()**
+    }
+    
+    note bottom of Counter
+        **Static Data Members:**
+        - Shared across all objects
+        - Exists before any object created
+        - One copy for entire class
+        - Must initialize outside class
+        
+        **Static Member Functions:**
+        - Can access only static members
+        - Called without object
+        - No 'this' pointer
+        
+        **Usage:**
+        Counter::getCount();
+        int Counter::count = 0; // init
+    end note
+}
+
+package "7. RAII (Resource Acquisition Is Initialization)" #LightPink {
+    
+    class FileHandler {
+        - file: FILE*
+        - filename: string
+        --
+        + FileHandler(string)
+        + write(string)
+        + read(): string
+        + **~FileHandler()**
+    }
+    
+    class SmartPointer<T> {
+        - ptr: T*
+        --
+        + SmartPointer(T*)
+        + **~SmartPointer()**
+        + operator*(): T&
+        + operator->(): T*
+        + get(): T*
+    }
+    
+    note right of FileHandler
+        **RAII Principle:**
+        - Constructor acquires resource
+        - Destructor releases resource
+        - Automatic cleanup
+        - Exception-safe
+        
+        **Example:**
+        FileHandler(filename) {
+            file = fopen(...);
+        }
+        ~FileHandler() {
+            if(file) fclose(file);
+        }
+        
+        **Benefits:**
+        - No memory leaks
+        - Automatic management
+        - Exception safety
+    end note
+    
+    note bottom of SmartPointer
+        **Modern RAII:**
+        - unique_ptr
+        - shared_ptr
+        - weak_ptr
+        - lock_guard
+        - fstream
+    end note
+}
+
+package "8. FUNCTION & OPERATOR OVERLOADING" #LightCyan {
+    
+    class Complex {
+        - real: double
+        - imag: double
+        --
+        + Complex()
+        + Complex(double, double)
+        + **operator+(Complex&): Complex**
+        + **operator-(Complex&): Complex**
+        + **operator==(Complex&): bool**
+        + **friend operator<<(ostream&, Complex&)**
+        + display()
+    }
+    
+    class Calculator {
+        --
+        + add(int, int): int
+        + add(double, double): double
+        + add(int, int, int): int
+        + add(string, string): string
+    }
+    
+    note right of Complex
+        **Operator Overloading:**
+        - Redefine operator behavior
+        - Works with user-defined types
+        
+        **Overloadable:**
+        +, -, *, /, ==, !=, <, >, <<, >>
+        [], (), ->, =, +=, -=, ++, --
+        
+        **Non-overloadable:**
+        ::, .*, ., ?:, sizeof, typeid
+        
+        **Syntax:**
+        ReturnType operator+(params) {}
+    end note
+    
+    note bottom of Calculator
+        **Function Overloading:**
+        - Same name, different parameters
+        - Different number of params
+        - Different types of params
+        - Compile-time polymorphism
+        
+        **NOT allowed:**
+        - Different return type only
+        - Different const/non-const only
+    end note
+}
+
+package "9. COPY & MOVE SEMANTICS" #Thistle {
+    
+    class String {
+        - data: char*
+        - length: size_t
+        --
+        + String(const char*)
+        + **String(const String&)** // Copy
+        + **String(String&&)** // Move
+        + **operator=(const String&)** // Copy assign
+        + **operator=(String&&)** // Move assign
+        + ~String()
+    }
+    
+    note bottom of String
+        **Copy Constructor:**
+        String(const String& other) {
+            // Deep copy
+            data = new char[other.length];
+            copy(other.data);
+        }
+        
+        **Move Constructor (C++11):**
+        String(String&& other) noexcept {
+            // Steal resources
+            data = other.data;
+            other.data = nullptr;
+        }
+        
+        **When to use:**
+        - Copy: Preserve original
+        - Move: Temporary objects, efficiency
+        
+        **Rule of Five:**
+        If you define one, define all:
+        1. Destructor
+        2. Copy constructor
+        3. Copy assignment
+        4. Move constructor
+        5. Move assignment
+    end note
+}
+
+package "10. CONST CORRECTNESS" #PeachPuff {
+    
+    class ConstExample {
+        - value: int
+        - data: int*
+        --
+        + getValue() **const**: int
+        + setValue(int)
+        + processData() **const**
+        + modifyData()
+        --
+        **const int* ptr** // ptr to const
+        **int* const ptr** // const ptr
+        **const int* const ptr** // both
+    }
+    
+    note bottom of ConstExample
+        **Const Member Functions:**
+        - Cannot modify object state
+        - Can call other const functions
+        - Can be called on const objects
+        
+        **Syntax:**
+        int getValue() const { return value; }
+        
+        **Const Objects:**
+        const MyClass obj;
+        obj.getValue(); // OK
+        obj.setValue(); // ERROR
+        
+        **Mutable keyword:**
+        mutable int cache; // can modify in const
+    end note
+}
+
+' Relationships between advanced concepts
+VirtualFunctions ..> RAII : Uses
+Shape ..> Complex : Can contain
+FileHandler ..> String : Uses
+Animal ..> ConstExample : May use
+
+legend bottom
+    |= Symbol |= Meaning |
+    | <back:LightBlue>   </back> | Runtime Polymorphism |
+    | <back:LightGreen>   </back> | Abstract Concepts |
+    | <back:LightCoral>   </back> | Multiple Inheritance |
+    | <back:LightYellow>   </back> | Inheritance Issues |
+    | <back:Lavender>   </back> | Special Access |
+    | <back:LightPink>   </back> | Resource Management |
+    | <back:LightCyan>   </back> | Operator Features |
+    | <back:Thistle>   </back> | Modern C++ |
+endlegend
+
+footer Advanced OOP Concepts - Complete Guide
+
+@enduml
