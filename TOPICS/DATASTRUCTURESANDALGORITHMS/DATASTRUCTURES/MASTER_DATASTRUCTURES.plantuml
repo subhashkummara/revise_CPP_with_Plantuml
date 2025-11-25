@@ -1,0 +1,660 @@
+@startuml Master_DataStructures
+skinparam backgroundColor #FEFEFE
+skinparam roundCorner 10
+skinparam packageStyle rectangle
+
+title Master Data Structures in C++ - Complete Overview
+
+package "LINEAR DATA STRUCTURES" #LightBlue {
+    
+    package "1. ARRAYS" #AliceBlue {
+        class StaticArray {
+            - elements[SIZE]: T
+            - size: int
+            --
+            + operator[](index): T&
+            + at(index): T&
+            + front(): T&
+            + back(): T&
+            + size(): int
+            --
+            **Time Complexity:**
+            Access: O(1)
+            Search: O(n)
+            Insert: O(n)
+            Delete: O(n)
+        }
+        
+        class DynamicArray {
+            - data: T*
+            - capacity: int
+            - size: int
+            --
+            + push_back(T)
+            + pop_back()
+            + resize(int)
+            + reserve(int)
+            + shrink_to_fit()
+            --
+            **std::vector equivalent**
+            Amortized O(1) insertion
+        }
+        
+        class MultiDimensionalArray {
+            - data: T**
+            - rows: int
+            - cols: int
+            --
+            + operator()(i, j): T&
+            + getRows(): int
+            + getCols(): int
+        }
+        
+        note right of StaticArray
+            **Characteristics:**
+            - Fixed size
+            - Contiguous memory
+            - Fast random access
+            - Cache friendly
+            
+            **Declaration:**
+            int arr[10];
+            int matrix[3][4];
+        end note
+    }
+    
+    package "2. LINKED LISTS" #Honeydew {
+        class Node {
+            + data: T
+            + next: Node*
+        }
+        
+        class SinglyLinkedList {
+            - head: Node*
+            - tail: Node*
+            - size: int
+            --
+            + insertAtHead(T)
+            + insertAtTail(T)
+            + insertAt(index, T)
+            + deleteNode(T)
+            + search(T): bool
+            + reverse()
+            + display()
+            --
+            **Time Complexity:**
+            Access: O(n)
+            Search: O(n)
+            Insert (head): O(1)
+            Insert (tail): O(1)
+            Delete: O(n)
+        }
+        
+        class DoublyNode {
+            + data: T
+            + next: Node*
+            + prev: Node*
+        }
+        
+        class DoublyLinkedList {
+            - head: Node*
+            - tail: Node*
+            - size: int
+            --
+            + insertAtHead(T)
+            + insertAtTail(T)
+            + deleteNode(T)
+            + reverseTraversal()
+            --
+            **Bidirectional traversal**
+            Extra memory for prev ptr
+        }
+        
+        class CircularLinkedList {
+            - head: Node*
+            - tail: Node*
+            --
+            + insertAtHead(T)
+            + insertAtTail(T)
+            + traverse()
+            --
+            **Last node → First node**
+            Useful for round-robin
+        }
+        
+        SinglyLinkedList *-- Node
+        DoublyLinkedList *-- DoublyNode
+        CircularLinkedList *-- Node
+        
+        note bottom of SinglyLinkedList
+            **Advantages:**
+            - Dynamic size
+            - Easy insertion/deletion
+            - No memory waste
+            
+            **Disadvantages:**
+            - No random access
+            - Extra memory for pointers
+            - Not cache friendly
+        end note
+    }
+    
+    package "3. STACKS" #LightYellow {
+        class Stack {
+            - data: T[]
+            - top: int
+            - capacity: int
+            --
+            + push(T)
+            + pop(): T
+            + peek(): T
+            + isEmpty(): bool
+            + isFull(): bool
+            + size(): int
+            --
+            **LIFO - Last In First Out**
+            Time: O(1) all operations
+        }
+        
+        note right of Stack
+            **Applications:**
+            - Function call stack
+            - Expression evaluation
+            - Undo/Redo operations
+            - Backtracking algorithms
+            - Browser history
+            
+            **Implementations:**
+            1. Array-based
+            2. Linked List-based
+            3. std::stack (adapter)
+        end note
+    }
+    
+    package "4. QUEUES" #LightCoral {
+        class Queue {
+            - data: T[]
+            - front: int
+            - rear: int
+            - size: int
+            --
+            + enqueue(T)
+            + dequeue(): T
+            + getFront(): T
+            + isEmpty(): bool
+            + isFull(): bool
+            --
+            **FIFO - First In First Out**
+            Time: O(1) all operations
+        }
+        
+        class CircularQueue {
+            - data: T[]
+            - front: int
+            - rear: int
+            - capacity: int
+            --
+            + enqueue(T)
+            + dequeue(): T
+            + isFull(): bool
+            --
+            **Better space utilization**
+            rear = (rear + 1) % capacity
+        }
+        
+        class PriorityQueue {
+            - heap: T[]
+            - size: int
+            --
+            + insert(T, priority)
+            + extractMax(): T
+            + getMax(): T
+            --
+            **Heap-based implementation**
+            Insert: O(log n)
+            Extract: O(log n)
+        }
+        
+        class Deque {
+            - data: T[]
+            - front: int
+            - rear: int
+            --
+            + insertFront(T)
+            + insertRear(T)
+            + deleteFront(): T
+            + deleteRear(): T
+            --
+            **Double-Ended Queue**
+            Insert/Delete both ends: O(1)
+        }
+        
+        note bottom of Queue
+            **Applications:**
+            - Job scheduling
+            - BFS traversal
+            - Request handling
+            - Print queue
+            - IO buffers
+        end note
+    }
+}
+
+package "NON-LINEAR DATA STRUCTURES" #LightGreen {
+    
+    package "5. TREES" #PaleGreen {
+        class TreeNode {
+            + data: T
+            + left: TreeNode*
+            + right: TreeNode*
+        }
+        
+        class BinaryTree {
+            - root: TreeNode*
+            --
+            + insert(T)
+            + inorder()
+            + preorder()
+            + postorder()
+            + height(): int
+            + levelOrder()
+        }
+        
+        class BinarySearchTree {
+            - root: TreeNode*
+            --
+            + insert(T)
+            + search(T): bool
+            + delete(T)
+            + findMin(): T
+            + findMax(): T
+            --
+            **Time Complexity:**
+            Average: O(log n)
+            Worst: O(n)
+        }
+        
+        class AVLTree {
+            - root: TreeNode*
+            - height: int
+            --
+            + insert(T)
+            + delete(T)
+            + rotateLeft()
+            + rotateRight()
+            + balance()
+            --
+            **Self-Balancing BST**
+            Height: O(log n)
+            All ops: O(log n)
+        }
+        
+        class RedBlackTree {
+            - root: TreeNode*
+            - color: Color
+            --
+            + insert(T)
+            + delete(T)
+            + fixViolation()
+            --
+            **Properties:**
+            1. Every node red/black
+            2. Root is black
+            3. No two red adjacent
+            4. Equal black nodes path
+        }
+        
+        class BTree {
+            - order: int
+            - keys: T[]
+            - children: BTree*[]
+            --
+            + insert(T)
+            + delete(T)
+            + search(T): bool
+            + splitChild()
+            --
+            **m-way search tree**
+            Used in databases
+        }
+        
+        class Heap {
+            - data: T[]
+            - size: int
+            --
+            + insert(T)
+            + extractMax(): T
+            + heapify()
+            + buildHeap()
+            --
+            **Complete Binary Tree**
+            Max/Min Heap
+            Insert: O(log n)
+            Extract: O(log n)
+        }
+        
+        BinaryTree <|-- BinarySearchTree
+        BinarySearchTree <|-- AVLTree
+        BinarySearchTree <|-- RedBlackTree
+        BinaryTree *-- TreeNode
+        
+        note right of BinaryTree
+            **Tree Traversals:**
+            - Inorder (L-Root-R)
+            - Preorder (Root-L-R)
+            - Postorder (L-R-Root)
+            - Level Order (BFS)
+            
+            **Applications:**
+            - File systems
+            - Expression parsing
+            - Decision trees
+            - DOM structure
+        end note
+    }
+    
+    package "6. GRAPHS" #LightSkyBlue {
+        class Graph {
+            - vertices: int
+            - adjList: vector<int>[]
+            --
+            + addEdge(u, v)
+            + removeEdge(u, v)
+            + BFS(start)
+            + DFS(start)
+            + isConnected(): bool
+        }
+        
+        class AdjacencyMatrix {
+            - matrix: int[][]
+            - vertices: int
+            --
+            + addEdge(u, v, weight)
+            + hasEdge(u, v): bool
+            --
+            **Space: O(V²)**
+            Edge check: O(1)
+            Good for dense graphs
+        }
+        
+        class AdjacencyList {
+            - list: vector<pair<int,int>>[]
+            --
+            + addEdge(u, v, weight)
+            + getNeighbors(u)
+            --
+            **Space: O(V + E)**
+            Good for sparse graphs
+        }
+        
+        class DirectedGraph {
+            + addDirectedEdge(u, v)
+            + topologicalSort()
+            + hasCycle(): bool
+        }
+        
+        class UndirectedGraph {
+            + addUndirectedEdge(u, v)
+            + findConnectedComponents()
+        }
+        
+        class WeightedGraph {
+            + dijkstra(source)
+            + bellmanFord(source)
+            + primsMST()
+            + kruskalMST()
+        }
+        
+        Graph <|-- DirectedGraph
+        Graph <|-- UndirectedGraph
+        Graph <|-- WeightedGraph
+        Graph ..> AdjacencyMatrix : uses
+        Graph ..> AdjacencyList : uses
+        
+        note bottom of Graph
+            **Graph Algorithms:**
+            - BFS: O(V + E)
+            - DFS: O(V + E)
+            - Dijkstra: O((V+E) log V)
+            - Bellman-Ford: O(VE)
+            - Kruskal MST: O(E log E)
+            - Prim MST: O(E log V)
+            
+            **Applications:**
+            - Social networks
+            - GPS navigation
+            - Web crawling
+            - Network routing
+        end note
+    }
+    
+    package "7. TRIES" #Lavender {
+        class TrieNode {
+            + children: TrieNode*[26]
+            + isEndOfWord: bool
+        }
+        
+        class Trie {
+            - root: TrieNode*
+            --
+            + insert(string)
+            + search(string): bool
+            + startsWith(prefix): bool
+            + delete(string)
+            + autocomplete(prefix)
+            --
+            **Time: O(m) where m = length**
+            Space: O(ALPHABET_SIZE * N * M)
+        }
+        
+        Trie *-- TrieNode
+        
+        note right of Trie
+            **Applications:**
+            - Auto-complete
+            - Spell checker
+            - IP routing
+            - Dictionary
+            - Search engines
+            
+            **Advantages:**
+            - Fast prefix search
+            - No collision
+            - Alphabetical ordering
+        end note
+    }
+}
+
+package "HASHING DATA STRUCTURES" #LightCyan {
+    
+    class HashTable {
+        - table: List<pair<K,V>>[]
+        - size: int
+        - capacity: int
+        --
+        + insert(K, V)
+        + get(K): V
+        + remove(K)
+        + hash(K): int
+        + resize()
+        --
+        **Average: O(1)**
+        Worst: O(n)
+    }
+    
+    class HashSet {
+        - table: List<T>[]
+        --
+        + insert(T)
+        + contains(T): bool
+        + remove(T)
+        --
+        **Unique elements only**
+        O(1) operations
+    }
+    
+    class HashMap {
+        - buckets: List<pair<K,V>>[]
+        --
+        + operator[](K): V&
+        + find(K): iterator
+        + erase(K)
+        --
+        **std::unordered_map**
+        Key-Value pairs
+    }
+    
+    note right of HashTable
+        **Collision Resolution:**
+        1. Chaining (Linked Lists)
+        2. Open Addressing
+           - Linear Probing
+           - Quadratic Probing
+           - Double Hashing
+        
+        **Hash Functions:**
+        - Division method
+        - Multiplication method
+        - Universal hashing
+        
+        **Load Factor:**
+        α = n/m (items/buckets)
+        Rehash when α > 0.75
+    end note
+}
+
+package "SPECIALIZED DATA STRUCTURES" #LightPink {
+    
+    class DisjointSet {
+        - parent: int[]
+        - rank: int[]
+        --
+        + makeSet(x)
+        + find(x): int
+        + union(x, y)
+        --
+        **Union-Find / DSU**
+        Near O(1) operations
+        Path compression
+    }
+    
+    class SegmentTree {
+        - tree: T[]
+        - n: int
+        --
+        + build(arr[])
+        + query(l, r): T
+        + update(index, value)
+        --
+        **Range Queries: O(log n)**
+        Update: O(log n)
+    }
+    
+    class FenwickTree {
+        - tree: int[]
+        --
+        + update(index, delta)
+        + query(index): int
+        + rangeQuery(l, r): int
+        --
+        **Binary Indexed Tree**
+        Space efficient
+        O(log n) operations
+    }
+    
+    class SuffixArray {
+        - text: string
+        - suffixArr: int[]
+        --
+        + buildSuffixArray()
+        + search(pattern): int
+        --
+        **Pattern matching**
+        Build: O(n log n)
+        Search: O(m log n)
+    }
+    
+    class BloomFilter {
+        - bitArray: bool[]
+        - hashFunctions: int
+        --
+        + insert(T)
+        + contains(T): bool
+        --
+        **Probabilistic DS**
+        No false negatives
+        Possible false positives
+    }
+    
+    note bottom of DisjointSet
+        **Applications:**
+        - Kruskal's algorithm
+        - Network connectivity
+        - Image processing
+        - Least common ancestor
+    end note
+}
+
+package "C++ STL CONTAINERS" #Wheat {
+    class STLSequence {
+        **Sequence Containers:**
+        - vector<T>
+        - deque<T>
+        - list<T>
+        - forward_list<T>
+        - array<T, N>
+    }
+    
+    class STLAssociative {
+        **Associative Containers:**
+        - set<T>
+        - multiset<T>
+        - map<K, V>
+        - multimap<K, V>
+    }
+    
+    class STLUnordered {
+        **Unordered Containers:**
+        - unordered_set<T>
+        - unordered_multiset<T>
+        - unordered_map<K, V>
+        - unordered_multimap<K, V>
+    }
+    
+    class STLAdapters {
+        **Container Adapters:**
+        - stack<T>
+        - queue<T>
+        - priority_queue<T>
+    }
+    
+    note bottom of STLSequence
+        **When to use what:**
+        
+        **vector:** Dynamic array, random access
+        **deque:** Double-ended operations
+        **list:** Frequent insert/delete middle
+        **set/map:** Ordered, unique, log(n)
+        **unordered_*:** Hash-based, O(1)
+        **stack/queue:** Specific access patterns
+    end note
+}
+
+' Relationships
+StaticArray -[hidden]- DynamicArray
+Queue -[hidden]- Stack
+BinaryTree -[hidden]- Graph
+HashTable -[hidden]- DisjointSet
+
+legend bottom
+    |= Color |= Category |
+    | <back:LightBlue>   </back> | Linear Structures |
+    | <back:LightGreen>   </back> | Non-Linear Structures |
+    | <back:LightCyan>   </back> | Hash-based |
+    | <back:LightPink>   </back> | Specialized |
+    | <back:Wheat>   </back> | C++ STL |
+endlegend
+
+footer Master Data Structures - Complete Reference Guide
+
+@enduml
