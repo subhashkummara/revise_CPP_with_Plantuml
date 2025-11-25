@@ -1,0 +1,72 @@
+@startuml Memory_Lifetime_Compare
+!theme plain
+
+title Memory Lifetime: What Can You Return?
+
+package "Stack (Local)" #mistyrose {
+  card "int local = 42;" as s1
+  card "Lives: Function only" as s2
+  card "Dies: On return" as s3
+  
+  s1 -down-> s2
+  s2 -down-> s3
+  
+  note bottom
+    ❌ NEVER return!
+    int* bad() {
+      int x = 10;
+      return &x;
+    }
+  end note
+}
+
+package "Static" #lightblue {
+  card "static int value = 42;" as st1
+  card "Lives: Entire program" as st2
+  card "Dies: Program exit" as st3
+  
+  st1 -down-> st2
+  st2 -down-> st3
+  
+  note bottom
+    ✅ Safe to return!
+    int* safe() {
+      static int x = 10;
+      return &x;
+    }
+  end note
+}
+
+package "Heap" #lightyellow {
+  card "new int(42)" as h1
+  card "Lives: Until delete" as h2
+  card "Dies: delete ptr" as h3
+  
+  h1 -down-> h2
+  h2 -down-> h3
+  
+  note bottom
+    ✅ Safe (caller deletes)
+    int* create() {
+      return new int(42);
+    }
+  end note
+}
+
+package "Class Member" #lightgreen {
+  card "class Obj { int data; }" as c1
+  card "Lives: With object" as c2
+  card "Dies: Object destroyed" as c3
+  
+  c1 -down-> c2
+  c2 -down-> c3
+  
+  note bottom
+    ✅ Safe while obj lives!
+    int* getData() {
+      return &data;
+    }
+  end note
+}
+
+@enduml

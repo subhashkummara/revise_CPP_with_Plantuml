@@ -1,0 +1,43 @@
+@startuml CPP_Classes_Part9
+!theme plain
+
+title Best Practices Summary
+
+card Design [
+  **Design:**
+  Use inheritance for is-a
+  Prefer composition
+  Keep hierarchies shallow
+  Use interfaces
+]
+
+card Virtual [
+  **Virtual Functions:**
+  Use for polymorphism
+  ALWAYS virtual destructor
+  Avoid in performance code
+  Use final keyword when done
+]
+
+card Memory [
+  **Memory:**
+  Use smart pointers
+  unique_ptr for ownership
+  shared_ptr for sharing
+  Avoid raw new/delete
+]
+
+Design -right-> Virtual
+Virtual -right-> Memory
+
+note bottom
+  Key Points:
+  1. Virtual destructor is CRITICAL
+  2. Use smart pointers
+  3. Prefer composition
+  4. dynamic_cast for safe downcast
+  5. Construction: Base -> Derived
+  6. Destruction: Derived -> Base
+end note
+
+@enduml

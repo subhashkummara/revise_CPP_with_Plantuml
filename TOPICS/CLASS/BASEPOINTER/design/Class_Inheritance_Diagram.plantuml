@@ -1,0 +1,39 @@
+@startuml Class_Inheritance_Diagram
+!theme plain
+
+title Class Inheritance Structure
+
+class Base {
+  - int a = 0
+  - int b = 0
+  + int x = 0
+  + int y = 0
+  + void methodA()
+}
+
+class derived {
+  - int c = 0
+  - int d = 0
+  + int p = 0
+  + int q = 0
+  + void methodB()
+}
+
+Base <|-- derived : public inheritance
+
+note right of Base
+  **Base Class:**
+  • 2 private members (a, b)
+  • 2 public members (x, y)
+  • 1 public method
+end note
+
+note right of derived
+  **Derived Class:**
+  • Inherits all Base members
+  • Adds 2 private (c, d)
+  • Adds 2 public (p, q)
+  • Adds 1 method (methodB)
+end note
+
+@enduml

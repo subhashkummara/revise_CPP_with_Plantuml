@@ -1,0 +1,35 @@
+@startuml Virtual_Destructor_Rule
+!theme plain
+
+title When to Use Virtual Destructor
+
+component always [
+Always Use Virtual When
+MUST use virtual Destructor when
+Class has ANY virtual function
+Class meant to be inherited
+Polymorphic usage
+Using as interface or abstract class
+]
+
+component skip [
+Can Skip Virtual When
+Can skip virtual when
+Class is final
+Never used polymorphically
+No virtual functions at all
+Performance critical
+]
+
+component cost [
+Cost of Virtual
+Cost of virtual destructor
+8 bytes for vptr
+Tiny performance overhead
+Worth it to prevent leaks
+]
+
+always --> skip
+skip --> cost
+
+@enduml

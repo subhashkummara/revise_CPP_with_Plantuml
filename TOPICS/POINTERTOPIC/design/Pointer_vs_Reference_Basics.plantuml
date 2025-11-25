@@ -1,0 +1,51 @@
+@startuml Pointer_vs_Reference_Basics
+!theme plain
+
+title Pointer vs Reference - Core Concepts
+
+package "Pointer Fundamentals" {
+  rectangle "Declaration" as P1 {
+    card "int* ptr;" as pc1
+    note right: Pointer can be null\nCan be reassigned\nNeeds dereferencing
+  }
+  
+  rectangle "Initialization" as P2 {
+    card "int x = 10;\nint* ptr = &x;" as pc2
+    note right: ptr stores ADDRESS of x\nptr itself is a variable
+  }
+  
+  rectangle "Dereferencing" as P3 {
+    card "*ptr = 20;" as pc3
+    note right: Access value through *\nCan cause segfault if null
+  }
+  
+  rectangle "Null Pointer" as P4 {
+    card "int* ptr = nullptr;" as pc4
+    note right: Valid but dangerous\nMust check before use
+  }
+}
+
+package "Reference Fundamentals" {
+  rectangle "Declaration" as R1 {
+    card "int& ref = x;" as rc1
+    note right: MUST be initialized\nCannot be null\nCannot be reassigned
+  }
+  
+  rectangle "No Dereferencing" as R2 {
+    card "ref = 20;" as rc2
+    note right: Automatic dereferencing\nCleaner syntax
+  }
+  
+  rectangle "Alias" as R3 {
+    card "ref IS x" as rc3
+    note right: Same memory location\nJust another name
+  }
+}
+
+note bottom
+  **Key Difference:**
+  Pointer = Variable holding address
+  Reference = Alias to existing variable
+end note
+
+@enduml

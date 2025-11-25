@@ -1,0 +1,83 @@
+@startuml Null_Pointer_Scenarios
+!theme plain
+
+title Null Pointer & Segmentation Fault Scenarios
+
+|Scenario 1: Uninitialized Pointer|
+start
+:int* ptr;
+note right
+  Contains garbage address
+  (e.g., 0x12345678)
+end note
+
+if (Dereference *ptr?) then (yes)
+  :❌ SEGFAULT!;
+  note right
+    Trying to access random memory
+    OS kills program
+    Core dumped
+  end note
+  end
+else (no)
+  :Initialize first;
+endif
+
+|Scenario 2: Null Pointer Dereference|
+:int* ptr = nullptr;
+note right
+  ptr = 0x0 (NULL)
+end note
+
+if (Use *ptr = 10?) then (yes)
+  :❌ NULL DEREFERENCE!;
+  note right
+    Accessing address 0x0
+    Segmentation fault
+    Core dumped
+  end note
+  end
+else (check first)
+  if (ptr != nullptr?) then (yes)
+    :✅ Safe to use;
+  else (no)
+    :Skip operation;
+  endif
+endif
+
+|Scenario 3: Dangling Pointer|
+:Function scope starts;
+:int temp = 42;
+:int* ptr = &temp;
+:Function scope ends;
+note right
+  temp destroyed!
+  ptr now points to invalid memory
+end note
+
+:*ptr = 10;
+note right
+  ❌ DANGLING POINTER!
+  Accessing freed memory
+  Undefined behavior
+end note
+end
+
+|Scenario 4: Double Delete|
+:int* ptr = new int(10);
+:delete ptr;
+note right
+  Memory freed
+  ptr still holds address
+end note
+
+:delete ptr again;
+note right
+  ❌ DOUBLE FREE!
+  Undefined behavior
+  May crash or corrupt heap
+end note
+
+stop
+
+@enduml

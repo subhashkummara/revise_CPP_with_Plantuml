@@ -1,0 +1,12 @@
+@startuml Complexity_Comparison
+!theme plain
+
+title Time & Space Complexity Comparison
+
+|Approach|Time Complexity|Space Complexity|Best Use Case|
+|Brute Force|O(n²)|O(1)|Small arrays, all pairs|
+|Two Pointer|O(n log n)|O(1)|Sorted array, target sum|
+|Hash Map|O(n)|O(n)|Unsorted, target sum|
+|Prefix Sum|O(n)|O(n)|Subarray sums|
+
+@enduml

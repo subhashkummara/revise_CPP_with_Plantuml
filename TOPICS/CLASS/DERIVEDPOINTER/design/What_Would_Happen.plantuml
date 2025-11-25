@@ -1,0 +1,63 @@
+@startuml What_Would_Happen
+!theme plain
+
+title What Would Happen If This Was Allowed
+
+start
+
+:derived *obj = new Base();
+note right #pink: Compiler ERROR!
+
+if (Hypothetically allowed?) then (yes)
+  
+  :obj points to Base object;
+  :Only 16 bytes allocated;
+  
+  partition "Accessing Members" {
+    
+    if (obj->x?) then (access)
+      #green:Works!;
+      note right: x exists in Base
+    endif
+    
+    if (obj->methodA()?) then (call)
+      #green:Works!;
+      note right: methodA in Base
+    endif
+    
+    if (obj->p?) then (access)
+      #red:CRASH!;
+      note right
+        p is at offset +24
+        Only 16 bytes allocated
+        Accessing unallocated memory!
+        Undefined behavior!
+      end note
+      stop
+    endif
+    
+    if (obj->methodB()?) then (call)
+      #red:CRASH or Garbage!;
+      note right
+        methodB doesn't exist
+        in Base object
+        Undefined behavior!
+      end note
+      stop
+    endif
+  }
+  
+else (no - compiler prevents)
+  #green:Compilation Error;
+  note right
+    **Error:**
+    invalid conversion from
+    'Base*' to 'derived*'
+    
+    Cannot convert base
+    pointer to derived pointer
+  end note
+  stop
+endif
+
+@enduml

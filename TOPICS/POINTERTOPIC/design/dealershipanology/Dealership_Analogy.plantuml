@@ -1,0 +1,98 @@
+@startuml Dealership_Analogy
+!theme plain
+
+title The Pointer-Memory Dealership Analogy
+
+package "Act 1: Business Setup" #lightgreen {
+  actor "ptr\n(Businessman)" as ptr1
+  component "0x5000\nSubhash's Dealership\n(Memory)" as dealer1
+  
+  ptr1 --> dealer1: Has contract with
+  
+  note right of dealer1
+    **Established Business:**
+    • ptr knows address: 0x5000
+    • Subhash operates at 0x5000
+    • Legal trade happening
+    • Everything works ✅
+  end note
+}
+
+package "Act 2: After delete (Business Closed)" #pink {
+  actor "ptr\n(Still has old address!)" as ptr2
+  component "0x5000\nCLOSED\n(Freed Memory)" as dealer2
+  
+  ptr2 --> dealer2: Still thinks he can trade!
+  
+  note right of dealer2
+    **DANGER ZONE:**
+    • Subhash CLOSED business
+    • Building at 0x5000 FREED
+    • But ptr still has address!
+    • ptr thinks: "I can visit 0x5000"
+  end note
+}
+
+package "Scenario A: Building Empty" #mistyrose {
+  card "ptr visits 0x5000" as visit1
+  card "Building demolished" as demol
+  card "CRASH (Segfault)" as crash1
+  
+  visit1 -down-> demol
+  demol -down-> crash1
+  
+  note bottom of crash1
+    Like visiting demolished building
+    OS: "This address invalid!"
+  end note
+}
+
+package "Scenario B: New Tenant" #moccasin {
+  card "ptr visits 0x5000" as visit2
+  card "Someone else using space!" as tenant
+  card "CORRUPTION (Wrong data)" as corrupt
+  
+  visit2 -down-> tenant
+  tenant -down-> corrupt
+  
+  note bottom of corrupt
+    Heap reused the space
+    ptr corrupts NEW data!
+  end note
+}
+
+package "Scenario C: Zombie Trade" #lavender {
+  card "ptr does illegal trade" as illegal
+  card "Appears to work" as zombie
+  card "Future disaster" as disaster
+  
+  illegal -down-> zombie
+  zombie -down-> disaster
+  
+  note bottom of disaster
+    WORST CASE!
+    Works temporarily
+    Crashes mysteriously later
+  end note
+}
+
+package "Act 3: After ptr = nullptr" #lightblue {
+  actor "ptr\n(Updated records)" as ptr3
+  component "NULL (0x0)\nNo Dealership" as dealer3
+  
+  note right of ptr3
+    **PROPER PROTOCOL:**
+    • ptr updated: "No dealership"
+    • ptr = 0x0 (nullptr)
+    • Can check: if(ptr != nullptr)
+    • Won't attempt illegal trade
+    
+    **Benefits:**
+    ✅ ptr knows: "I have no partner"
+    ✅ if(ptr) check fails safely
+    ✅ Can't accidentally trade
+    ✅ Can reuse ptr for new business
+  end note
+}
+
+@enduml

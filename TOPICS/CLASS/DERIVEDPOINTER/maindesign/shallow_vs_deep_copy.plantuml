@@ -1,0 +1,83 @@
+@startuml Shallow_vs_Deep_Copy
+!theme plain
+
+title Shallow Copy vs Deep Copy
+
+package "Shallow Copy Problem" #pink {
+  
+  component obj1 [
+    Object 1
+    ----
+    ptr -> [Data in Heap]
+  ]
+  
+  component obj2 [
+    Object 2 (Shallow Copy)
+    ----
+    ptr -> [Same Data!]
+  ]
+  
+  component heap [
+    Heap Memory
+    [Data]
+  ]
+  
+  obj1 --> heap
+  obj2 --> heap
+  
+  note right of obj2
+    PROBLEM:
+    Both objects point to
+    SAME memory location
+    
+    When obj1 destructs:
+    delete ptr (frees data)
+    
+    When obj2 destructs:
+    delete ptr (double free!)
+    CRASH!
+  end note
+}
+
+package "Deep Copy Solution" #lightgreen {
+  
+  component obj3 [
+    Object 1
+    ----
+    ptr -> [Data 1]
+  ]
+  
+  component obj4 [
+    Object 2 (Deep Copy)
+    ----
+    ptr -> [Data 2]
+  ]
+  
+  component heap1 [
+    Heap Memory
+    [Data 1]
+  ]
+  
+  component heap2 [
+    Heap Memory
+    [Data 2]
+  ]
+  
+  obj3 --> heap1
+  obj4 --> heap2
+  
+  note right of obj4
+    SOLUTION:
+    Each object has its
+    OWN copy of data
+    
+    When obj1 destructs:
+    delete ptr (frees Data 1)
+    
+    When obj2 destructs:
+    delete ptr (frees Data 2)
+    No crash!
+  end note
+}
+
+@enduml

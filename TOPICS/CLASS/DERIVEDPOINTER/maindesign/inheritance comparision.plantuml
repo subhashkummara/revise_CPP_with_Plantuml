@@ -1,0 +1,62 @@
+@startuml Inheritance_Comparison
+!theme plain
+
+title Protected vs Private - Inheritance Chain Comparison
+
+package "Scenario 1: PROTECTED inheritance" #lightgreen {
+  
+  class Base {
+    # int data
+  }
+  
+  class Middle {
+    **class Middle : protected Base**
+    ----
+    data becomes: protected
+  }
+  
+  class GrandChild {
+    **class GrandChild : public Middle**
+    ----
+    Can access: data (YES)
+  }
+  
+  Base <|-- Middle : protected
+  Middle <|-- GrandChild : public
+  
+  note right of GrandChild
+    **Result:**
+    GrandChild CAN access data
+    because it's still protected
+  end note
+}
+
+package "Scenario 2: PRIVATE inheritance" #pink {
+  
+  class Base2 {
+    # int data
+  }
+  
+  class Middle2 {
+    **class Middle2 : private Base2**
+    ----
+    data becomes: private
+  }
+  
+  class GrandChild2 {
+    **class GrandChild2 : public Middle2**
+    ----
+    Can access: data (NO)
+  }
+  
+  Base2 <|-- Middle2 : private
+  Middle2 <|-- GrandChild2 : public
+  
+  note right of GrandChild2
+    **Result:**
+    GrandChild2 CANNOT access data
+    because it became private
+  end note
+}
+
+@enduml

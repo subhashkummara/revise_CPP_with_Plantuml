@@ -1,0 +1,47 @@
+@startuml Pointer_Relationships
+!theme plain
+
+title Base* obj = new derived() - Pointer Analysis
+
+card "Stack: obj" as stack {
+  Variable: obj
+  Type: Base*
+  Address: 0x7FFF1000
+  Value: 0x5000
+}
+
+card "Heap: derived Object" as heap {
+  Address: 0x5000
+  Type: derived
+  Size: 32 bytes
+}
+
+stack --> heap: points to
+
+package "Can Access" #lightgreen {
+  card "Base::x"
+  card "Base::y"
+  card "Base::methodA()"
+}
+
+package "Cannot Access" #pink {
+  card "Base::a (private)"
+  card "Base::b (private)"
+  card "derived::p (hidden)"
+  card "derived::q (hidden)"
+  card "derived::c (hidden)"
+  card "derived::d (hidden)"
+  card "derived::methodB() (hidden)"
+}
+
+note bottom
+  Object Slicing:
+  Full derived object exists,
+  but Base* can only see Base part
+  
+  To access derived members:
+  derived* d = (derived*)obj;
+  d->p = 10;
+end note
+
+@enduml

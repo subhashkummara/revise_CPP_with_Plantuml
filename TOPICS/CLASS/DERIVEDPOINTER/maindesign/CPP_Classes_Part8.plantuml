@@ -1,0 +1,45 @@
+@startuml CPP_Classes_Part8
+!theme plain
+
+title Complete Example - Shape Hierarchy
+
+abstract class Shape {
+  # string name
+  + Shape(string n)
+  + virtual ~Shape()
+  + {abstract} double area()
+  + {abstract} void draw()
+  + string getName()
+}
+
+class Circle {
+  - double radius
+  + Circle(double r)
+  + ~Circle()
+  + double area()
+  + void draw()
+}
+
+class Rectangle {
+  - double width
+  - double height
+  + Rectangle(double w, double h)
+  + ~Rectangle()
+  + double area()
+  + void draw()
+}
+
+Shape <|-- Circle
+Shape <|-- Rectangle
+
+note right of Shape
+  Usage:
+  Shape* s = new Circle(5.0);
+  s->area();
+  delete s;
+  
+  Memory:
+  vptr name radius
+end note
+
+@enduml

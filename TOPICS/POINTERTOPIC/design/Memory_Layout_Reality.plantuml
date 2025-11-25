@@ -1,0 +1,51 @@
+@startuml Memory_Layout_Reality
+!theme plain
+
+title Memory Layout: The REAL Implementation
+
+rectangle "What C++ Says (Abstract Model)" {
+  rectangle "int x = 10" as abs1 {
+    card "Address: 0x1000\nValue: 10"
+  }
+  
+  rectangle "int& ref = x" as abs2 {
+    card "ref IS x\n(just another name)"
+  }
+  
+  abs2 -down-> abs1: alias
+  
+  note right of abs2
+    **C++ Standard:**
+    "Reference is an alias"
+    "No separate storage"
+    "Same as the variable itself"
+  end note
+}
+
+rectangle "What Compiler Does (Reality)" {
+  rectangle "int x = 10" as real1 {
+    card "Address: 0x1000\nValue: 10"
+  }
+  
+  rectangle "int& ref = x" as real2 {
+    card "Address: 0x2000\nValue: 0x1000\n(hidden pointer!)"
+  }
+  
+  real2 -down-> real1: secretly points to
+  
+  note right of real2
+    **Implementation:**
+    Compiler creates a pointer
+    Automatically dereferences
+    You never see the pointer!
+  end note
+}
+
+note bottom
+  **Key Point:**
+  References are syntactic sugar
+  Implemented as const pointers
+  But hidden from programmer
+end note
+
+@enduml

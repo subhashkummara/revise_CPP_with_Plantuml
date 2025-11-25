@@ -1,0 +1,76 @@
+@startuml Access_Control
+!theme plain
+
+title Access Control with Base* obj = new derived()
+
+|Stack|
+start
+:Base *obj;
+note right: Pointer variable (8 bytes)
+
+|Heap|
+:new derived();
+
+partition "Constructor Execution Order" {
+  #lightgreen:**1. Base Constructor**;
+  :Initialize a = 0 (private);
+  :Initialize b = 0 (private);
+  :Initialize x = 0 (public);
+  :Initialize y = 0 (public);
+  
+  #lightblue:**2. derived Constructor**;
+  :Initialize c = 0 (private);
+  :Initialize d = 0 (private);
+  :Initialize p = 0 (public);
+  :Initialize q = 0 (public);
+}
+
+|Main|
+:obj points to derived object;
+
+partition "What Can obj Access?" {
+  
+  if (Member access?) then (obj->x)
+    #green:**✅ Allowed**;
+    note right
+      x is public in Base
+      obj is Base*
+      Can access
+    end note
+    
+  elseif (obj->y) then
+    #green:**✅ Allowed**;
+    note right: Public member of Base
+    
+  elseif (obj->methodA()) then
+    #green:**✅ Allowed**;
+    note right: Public method of Base
+    
+  elseif (obj->a) then
+    #red:**❌ Denied**;
+    note right
+      a is private in Base
+      Not accessible
+    end note
+    
+  elseif (obj->p) then
+    #orange:**❌ Hidden**;
+    note right
+      p is public in derived
+      But obj is Base*
+      Cannot see derived members
+    end note
+    
+  elseif (obj->methodB()) then
+    #orange:**❌ Hidden**;
+    note right
+      methodB in derived
+      Not visible through Base*
+    end note
+    
+  endif
+}
+
+stop
+
+@enduml

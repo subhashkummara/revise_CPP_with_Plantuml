@@ -1,0 +1,49 @@
+@startuml Return_Simple
+!theme plain
+
+title Return from Function: Simple Rules
+
+card "Rule 1: Local Variable" #pink {
+  **❌ NEVER RETURN**
+  
+  int* bad() {
+    int x = 10;
+    return &x;  <-- Dies here!
+  }
+}
+
+card "Rule 2: Class Member" #lightgreen {
+  **✅ SAFE TO RETURN**
+  
+  class C {
+    int data;
+    int* get() {
+      return &data;  <-- Lives with object
+    }
+  };
+}
+
+card "Rule 3: Static" #lightblue {
+  **✅ SAFE TO RETURN**
+  
+  int* get() {
+    static int x = 10;
+    return &x;  <-- Lives forever
+  }
+}
+
+card "Rule 4: Heap" #lightyellow {
+  **✅ SAFE (caller deletes)**
+  
+  int* create() {
+    return new int(10);  <-- Lives until delete
+  }
+}
+
+note bottom
+  **Memory Lifetime Rule:**
+  Can only return pointer if
+  memory lives AFTER function ends!
+end note
+
+@enduml

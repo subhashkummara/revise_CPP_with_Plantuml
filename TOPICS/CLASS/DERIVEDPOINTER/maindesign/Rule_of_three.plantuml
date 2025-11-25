@@ -1,0 +1,66 @@
+@startuml Rule_Of_Three
+!theme plain
+
+title Rule of Three/Five/Zero
+
+package "Rule of Three (C++98)" #lightblue {
+  component rule3 [
+    If you define ONE of these:
+    1. Destructor
+    2. Copy Constructor
+    3. Copy Assignment Operator
+    
+    You should define ALL THREE
+  ]
+  
+  note right of rule3
+    Why:
+    If you manage resources
+    you need all three to
+    manage them correctly
+  end note
+}
+
+package "Rule of Five (C++11)" #lightgreen {
+  component rule5 [
+    Add two more:
+    4. Move Constructor
+    5. Move Assignment Operator
+    
+    Total: Define all FIVE
+  ]
+  
+  note right of rule5
+    Modern C++:
+    Enables move semantics
+    for better performance
+  end note
+}
+
+package "Rule of Zero (Preferred)" #lightyellow {
+  component rule0 [
+    Best Practice:
+    Don't manage resources manually
+    
+    Use:
+    - unique_ptr
+    - shared_ptr
+    - vector
+    - string
+    
+    Let them handle it!
+  ]
+  
+  note right of rule0
+    Preferred approach:
+    No manual new/delete
+    Compiler generates
+    correct copy/move
+    automatically
+  end note
+}
+
+rule3 -down-> rule5
+rule5 -down-> rule0
+
+@enduml

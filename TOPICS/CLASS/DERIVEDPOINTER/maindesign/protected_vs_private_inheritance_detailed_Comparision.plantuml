@@ -1,0 +1,84 @@
+@startuml Detailed_Comparison
+!theme plain
+
+title Protected vs Private Inheritance - Complete Comparison
+
+package "1. Protected Inheritance" #lightgreen {
+  
+  card Setup1 [
+    **Code:**
+    class Base {
+      protected: int x;
+      public: int y;
+    };
+    
+    class Middle : protected Base {
+      // x is protected
+      // y is protected
+    };
+    
+    class GrandChild : public Middle {
+      // ✅ CAN access x
+      // ✅ CAN access y
+    };
+  ]
+  
+  card Access1 [
+    **Access in GrandChild:**
+    
+    void GrandChild::method() {
+      x = 10;  // ✅ OK!
+      y = 20;  // ✅ OK!
+    }
+    
+    **Inheritance continues!**
+  ]
+  
+  Setup1 -down-> Access1
+}
+
+package "2. Private Inheritance" #pink {
+  
+  card Setup2 [
+    **Code:**
+    class Base {
+      protected: int x;
+      public: int y;
+    };
+    
+    class Middle : private Base {
+      // x is private
+      // y is private
+    };
+    
+    class GrandChild : public Middle {
+      // ❌ CANNOT access x
+      // ❌ CANNOT access y
+    };
+  ]
+  
+  card Access2 [
+    **Access in GrandChild:**
+    
+    void GrandChild::method() {
+      x = 10;  // ❌ ERROR!
+      y = 20;  // ❌ ERROR!
+    }
+    
+    **Inheritance STOPS!**
+  ]
+  
+  Setup2 -down-> Access2
+}
+
+note bottom
+  **Key Difference:**
+  
+  Protected: Allows FURTHER inheritance
+  Private: STOPS inheritance chain
+  
+  Both prevent outside access,
+  but behave differently for derived classes!
+end note
+
+@enduml

@@ -1,0 +1,535 @@
+@startuml Complete_CPP_Class_Knowledge
+!theme plain
+
+title Complete C++ Class & Inheritance Knowledge Map
+
+' ============================================
+' PART 1: CLASS BASICS
+' ============================================
+
+package "1. CLASS FUNDAMENTALS" #lightblue {
+  
+  class "Basic Class" as basic {
+    **Access Specifiers:**
+    - private members (default)
+    # protected members
+    + public members
+    --
+    **Constructors:**
+    + Default constructor
+    + Parameterized constructor
+    + Copy constructor
+    + Move constructor
+    --
+    **Destructor:**
+    + ~ClassName()
+    --
+    **Member Functions:**
+    + Regular methods
+    + const methods
+    + static methods
+  }
+  
+  card "Memory Layout - Basic Class" as mem1 {
+    Stack:
+    obj: [vptr][members]
+    
+    Size = sizeof(all members)
+    + vtable pointer (if virtual)
+  }
+  
+  basic -down-> mem1
+}
+
+' ============================================
+' PART 2: INHERITANCE TYPES
+' ============================================
+
+package "2. INHERITANCE TYPES" #lightyellow {
+  
+  class Base {
+    - private: a, b
+    # protected: m, n
+    + public: x, y
+  }
+  
+  class "Public Inheritance" as pub {
+    **Base Access → Derived Access**
+    private → inaccessible
+    protected → protected
+    public → public
+  }
+  
+  class "Protected Inheritance" as prot {
+    **Base Access → Derived Access**
+    private → inaccessible
+    protected → protected
+    public → protected
+  }
+  
+  class "Private Inheritance" as priv {
+    **Base Access → Derived Access**
+    private → inaccessible
+    protected → private
+    public → private
+  }
+  
+  Base <|-- pub : public
+  Base <|-- prot : protected
+  Base <|-- priv : private
+}
+
+' ============================================
+' PART 3: POLYMORPHISM
+' ============================================
+
+package "3. POLYMORPHISM & VIRTUAL FUNCTIONS" #lightgreen {
+  
+  class "Without Virtual" as novirt {
+    + void method()
+    --
+    **Static Binding:**
+    Compile-time resolution
+    No vtable
+    No runtime overhead
+  }
+  
+  class "With Virtual" as virt {
+    + virtual void method()
+    --
+    **Dynamic Binding:**
+    Runtime resolution
+    Has vtable pointer
+    8 bytes overhead
+  }
+  
+  class "Pure Virtual (Abstract)" as pure {
+    + virtual void method() = 0
+    --
+    **Cannot instantiate**
+    Must override in derived
+    Interface definition
+  }
+  
+  novirt -down-> virt : Add virtual
+  virt -down-> pure : Make pure
+}
+
+' ============================================
+' PART 4: MEMORY LAYOUTS
+' ============================================
+
+package "4. MEMORY LAYOUTS" #pink {
+  
+  card "No Virtual Functions" as layout1 {
+    **Memory Structure:**
+    
+    Base object (16 bytes):
+    [a][b][x][y]
+    
+    derived object (32 bytes):
+    [a][b][x][y][c][d][p][q]
+    
+    **No vtable pointer**
+    **No runtime overhead**
+  }
+  
+  card "With Virtual Functions" as layout2 {
+    **Memory Structure:**
+    
+    Base object (24 bytes):
+    [vptr][a][b][x][y]
+     ↓
+    vtable: [~Base][methodA]
+    
+    derived object (40 bytes):
+    [vptr][a][b][x][y][c][d][p][q]
+     ↓
+    vtable: [~derived][methodA][methodB]
+    
+    **+8 bytes for vptr**
+    **Runtime polymorphism enabled**
+  }
+  
+  card "Abstract Class" as layout3 {
+    **Memory Structure:**
+    
+    Abstract Base (cannot create):
+    [vptr] + members
+    
+    Concrete derived (40 bytes):
+    [vptr][base_members][derived_members]
+     ↓
+    vtable: [~derived][pure_methods_impl]
+    
+    **Must implement all pure virtuals**
+  }
+  
+  layout1 -down-> layout2 : Add virtual
+  layout2 -down-> layout3 : Add pure virtual
+}
+
+' ============================================
+' PART 5: CONSTRUCTOR/DESTRUCTOR ORDER
+' ============================================
+
+package "5. CONSTRUCTION & DESTRUCTION ORDER" #lavender {
+  
+  card "Construction Order" as ctor {
+    **Top to Bottom:**
+    
+    1. Base constructor
+       ├─ Initialize vptr
+       └─ Initialize members
+    
+    2. Derived constructor
+       ├─ Update vptr
+       └─ Initialize members
+    
+    **Example:**
+    Base::Base() called first
+    derived::derived() called second
+  }
+  
+  card "Destruction Order" as dtor {
+    **Bottom to Top (Reverse):**
+    
+    1. Derived destructor
+       └─ Cleanup derived members
+    
+    2. Base destructor
+       └─ Cleanup base members
+    
+    **Example:**
+    derived::~derived() called first
+    Base::~Base() called second
+    
+    **CRITICAL:**
+    Base destructor MUST be virtual!
+  }
+  
+  ctor -right-> dtor : Opposite order
+}
+
+' ============================================
+' PART 6: POINTER CASTING RULES
+' ============================================
+
+package "6. POINTER CASTING RULES" #orange {
+  
+  card "Upcasting (Safe)" as upcast {
+    **Base* = new derived()**
+    
+    ✅ Always safe
+    ✅ Implicit conversion
+    ✅ No cast needed
+    
+    Can access: Base members only
+    Cannot access: derived members
+  }
+  
+  card "Downcasting (Unsafe)" as downcast {
+    **derived* = new Base()**
+    
+    ❌ Compilation error
+    ❌ Object too small
+    ❌ Dangerous
+    
+    Would crash: Accessing non-existent members
+  }
+  
+  card "Safe Downcasting" as safecast {
+    **dynamic_cast<derived*>(basePtr)**
+    
+    ✅ Runtime type check
+    ✅ Returns nullptr if invalid
+    ✅ Requires virtual functions
+    
+    Example:
+    Base* b = new derived();
+    derived* d = dynamic_cast<derived*>(b);
+    if (d) { /* safe */ }
+  }
+  
+  upcast -down-> downcast
+  downcast -down-> safecast : Fix with
+}
+
+' ============================================
+' PART 7: VIRTUAL DESTRUCTOR IMPORTANCE
+' ============================================
+
+package "7. VIRTUAL DESTRUCTOR (CRITICAL!)" #red {
+  
+  card "Without Virtual Destructor" as novirtdtor {
+    **MEMORY LEAK!**
+    
+    class Base {
+      ~Base() { /* cleanup */ }
+    };
+    
+    Base* obj = new derived();
+    delete obj;
+    
+    **Problem:**
+    ❌ Only ~Base() called
+    ❌ ~derived() NOT called
+    ❌ derived members leaked!
+  }
+  
+  card "With Virtual Destructor" as virtdtor {
+    **CORRECT!**
+    
+    class Base {
+      virtual ~Base() { /* cleanup */ }
+    };
+    
+    Base* obj = new derived();
+    delete obj;
+    
+    **Correct Order:**
+    ✅ ~derived() called first
+    ✅ ~Base() called second
+    ✅ All memory cleaned!
+  }
+  
+  novirtdtor -right-> virtdtor : ALWAYS USE
+  
+  note bottom of virtdtor
+    **GOLDEN RULE:**
+    If class has ANY virtual function,
+    destructor MUST be virtual!
+  end note
+}
+
+' ============================================
+' PART 8: ABSTRACT CLASS RULES
+' ============================================
+
+package "8. ABSTRACT & INTERFACE CLASSES" #cyan {
+  
+  class "Abstract Class" as abstract {
+    **Has at least one pure virtual**
+    
+    + virtual void method() = 0
+    + void regularMethod()
+    + int data
+    
+    **Rules:**
+    • Cannot instantiate
+    • Can have data members
+    • Can have regular methods
+    • Derived must implement pure virtuals
+  }
+  
+  class "Pure Interface" as interface {
+    **All functions pure virtual**
+    
+    + virtual void m1() = 0
+    + virtual void m2() = 0
+    + virtual ~Interface() {}
+    
+    **Rules:**
+    • No data members
+    • No implementation
+    • Multiple inheritance safe
+    • Like Java/C# interface
+  }
+  
+  class "Concrete Class" as concrete {
+    **No pure virtuals**
+    
+    + void method() override
+    + void regularMethod()
+    
+    **Can instantiate:**
+    ✅ obj = new Concrete()
+  }
+  
+  abstract <|-- concrete : implements
+  interface <|-- concrete : implements
+}
+
+' ============================================
+' PART 9: COMMON MISTAKES
+' ============================================
+
+package "9. COMMON MISTAKES TO AVOID" #pink {
+  
+  card "Mistake 1: Object Slicing" as mistake1 {
+    **Problem:**
+    derived d;
+    Base b = d;  // ❌ Slicing!
+    
+    **Lost:**
+    All derived members removed
+    
+    **Fix:**
+    Base* b = &d;  // ✅ Use pointer
+    Base& b = d;   // ✅ Use reference
+  }
+  
+  card "Mistake 2: Calling Virtual in Constructor" as mistake2 {
+    **Problem:**
+    class Base {
+      Base() { virtualMethod(); }
+      virtual void virtualMethod();
+    };
+    
+    **Issue:**
+    ❌ Calls Base version, not derived!
+    ❌ derived object not constructed yet
+    
+    **Fix:**
+    Don't call virtual functions
+    in constructors
+  }
+  
+  card "Mistake 3: Non-virtual Destructor" as mistake3 {
+    **Problem:**
+    class Base {
+      ~Base() { }  // ❌ Not virtual!
+    };
+    
+    Base* p = new derived();
+    delete p;  // ❌ Leaks derived part!
+    
+    **Fix:**
+    virtual ~Base() { }  // ✅ Always virtual
+  }
+  
+  mistake1 -down-> mistake2
+  mistake2 -down-> mistake3
+}
+
+' ============================================
+' PART 10: BEST PRACTICES
+' ============================================
+
+package "10. BEST PRACTICES" #lightgreen {
+  
+  card "Design Guidelines" as guide1 {
+    **Inheritance:**
+    ✅ Use for "is-a" relationship
+    ✅ Prefer composition over inheritance
+    ✅ Keep hierarchies shallow (max 3-4 levels)
+    ✅ Use interfaces for flexibility
+  }
+  
+  card "Virtual Functions" as guide2 {
+    **When to use virtual:**
+    ✅ If class is meant to be inherited
+    ✅ If polymorphic behavior needed
+    ✅ ALWAYS make destructor virtual
+    
+    **When NOT to use:**
+    ❌ Performance-critical code
+    ❌ Final classes (use 'final' keyword)
+    ❌ Static binding sufficient
+  }
+  
+  card "Memory Management" as guide3 {
+    **RAII Pattern:**
+    ✅ Use smart pointers
+    ✅ unique_ptr<Base> p = make_unique<derived>()
+    ✅ shared_ptr for shared ownership
+    
+    **Avoid:**
+    ❌ Raw new/delete
+    ❌ Manual memory management
+  }
+  
+  guide1 -right-> guide2
+  guide2 -right-> guide3
+}
+
+' ============================================
+' PART 11: COMPLETE EXAMPLE
+' ============================================
+
+package "11. COMPLETE EXAMPLE" #wheat {
+  
+  class Shape {
+    # string name
+    + Shape(string n)
+    + virtual ~Shape()
+    + virtual double area() = 0
+    + virtual void draw() = 0
+    + string getName() const
+  }
+  
+  class Circle {
+    - double radius
+    + Circle(double r)
+    + ~Circle() override
+    + double area() override
+    + void draw() override
+  }
+  
+  class Rectangle {
+    - double width
+    - double height
+    + Rectangle(double w, double h)
+    + ~Rectangle() override
+    + double area() override
+    + void draw() override
+  }
+  
+  Shape <|-- Circle
+  Shape <|-- Rectangle
+  
+  note right of Shape
+    **Memory Layout:**
+    
+    Shape (abstract):
+    [vptr][name]
+    
+    Circle object:
+    [vptr][name][radius]
+    
+    Rectangle object:
+    [vptr][name][width][height]
+    
+    **vtable for Circle:**
+    [~Circle][area][draw]
+    
+    **Usage:**
+    Shape* s = new Circle(5.0);
+    s->area();  // Calls Circle::area()
+    delete s;   // Calls ~Circle() then ~Shape()
+  end note
+}
+
+' ============================================
+' CONNECTING ALL CONCEPTS
+' ============================================
+
+basic -down-> pub : Extend with
+virt -down-> abstract : Make abstract
+abstract -down-> Shape : Real example
+
+note bottom
+  **COMPLETE CLASS INHERITANCE KNOWLEDGE:**
+  
+  1. ✅ Access specifiers (private, protected, public)
+  2. ✅ Inheritance types (public, protected, private)
+  3. ✅ Virtual functions & polymorphism
+  4. ✅ Abstract classes & interfaces
+  5. ✅ Memory layouts with/without virtual
+  6. ✅ Construction/destruction order
+  7. ✅ Pointer casting rules
+  8. ✅ Virtual destructor importance
+  9. ✅ Common mistakes & how to avoid
+  10. ✅ Best practices & design patterns
+  11. ✅ Complete working example
+  
+  **Remember:**
+  • Base destructor MUST be virtual
+  • Use smart pointers (unique_ptr, shared_ptr)
+  • Prefer composition over inheritance
+  • dynamic_cast for safe downcasting
+  • Construction: Base → Derived
+  • Destruction: Derived → Base
+end note
+
+@enduml

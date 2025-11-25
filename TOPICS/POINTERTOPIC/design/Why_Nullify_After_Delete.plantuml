@@ -1,0 +1,105 @@
+@startuml Why_Nullify_After_Delete
+!theme plain
+
+title Why Set ptr = nullptr After delete?
+
+start
+
+:int* ptr = new int(10);
+note right
+  Heap address: 0x5000
+  ptr = 0x5000
+  Memory contains: 10
+end note
+
+:delete ptr;
+note right
+  **What delete does:**
+  ✅ Frees memory at 0x5000
+  ✅ Returns it to heap
+  ❌ Does NOT change ptr!
+  
+  **After delete:**
+  Memory freed: ✅
+  ptr still = 0x5000 ⚠️
+  
+  **DANGER ZONE!**
+  ptr is now a DANGLING POINTER
+end note
+
+if (Set ptr = nullptr?) then (yes)
+  
+  #green:ptr = nullptr;
+  note right
+    **Now:**
+    ptr = 0x0
+    
+    **Benefits:**
+    ✅ Safe to delete again
+    ✅ Can check if(ptr)
+    ✅ Clear invalid state
+    ✅ Prevent use-after-free
+  end note
+  
+  if (Accidentally use ptr?) then (yes)
+    
+    if (ptr != nullptr?) then (yes)
+      :Use pointer;
+    else (no - ptr is null)
+      #green:Skip - SAFE!;
+      note right
+        Check catches it!
+        No crash
+      end note
+    endif
+    
+  else (try to delete again)
+    :delete ptr;
+    note right
+      **Safe!**
+      delete nullptr
+      does nothing
+      (defined behavior)
+    end note
+  endif
+  
+else (no - don't nullify)
+  
+  #red:ptr still = 0x5000;
+  note right
+    **DANGLING POINTER!**
+    Points to freed memory
+  end note
+  
+  if (Accidentally use ptr?) then (yes)
+    
+    :*ptr = 20;
+    #red:❌ USE-AFTER-FREE!;
+    note right
+      **Undefined Behavior:**
+      • Memory already freed
+      • May crash
+      • May corrupt heap
+      • May "work" (worst!)
+      • Security vulnerability
+    end note
+    stop
+    
+  else (try to delete again)
+    :delete ptr;
+    #red:❌ DOUBLE FREE!;
+    note right
+      **Undefined Behavior:**
+      • Freeing freed memory
+      • Heap corruption
+      • May crash
+      • Security vulnerability
+    end note
+    stop
+  endif
+  
+endif
+
+stop
+
+@enduml

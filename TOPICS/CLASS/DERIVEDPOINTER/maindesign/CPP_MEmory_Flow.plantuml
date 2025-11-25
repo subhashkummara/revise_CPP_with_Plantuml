@@ -1,0 +1,37 @@
+@startuml CPP_Memory_Flow
+!theme plain
+
+title Memory Allocation & Destruction Flow
+
+start
+
+:Create object: new Derived();
+
+partition Construction {
+  :Allocate memory (40 bytes);
+  :Call Base constructor;
+  :Initialize vptr to Base vtable;
+  :Initialize Base members;
+  :Call Derived constructor;
+  :Update vptr to Derived vtable;
+  :Initialize Derived members;
+}
+
+:Object ready;
+:Use object methods;
+
+:Delete object: delete ptr;
+
+partition Destruction {
+  :Check vptr (points to Derived);
+  :Call Derived destructor;
+  :Cleanup Derived members;
+  :Update vptr to Base vtable;
+  :Call Base destructor;
+  :Cleanup Base members;
+  :Free memory (40 bytes);
+}
+
+stop
+
+@enduml

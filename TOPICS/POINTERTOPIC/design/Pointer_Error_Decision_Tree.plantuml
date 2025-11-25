@@ -1,0 +1,59 @@
+@startuml Pointer_Error_Decision_Tree
+!theme plain
+
+title Pointer Usage Decision Tree
+
+start
+
+:Need to work with address?|
+
+if (Can value be optional/null?) then (yes)
+  :Use Pointer (int*)|
+  
+  if (Dynamically allocated?) then (yes)
+    :int* ptr = new int(10);|
+    
+    :Use the pointer|
+    
+    :delete ptr;|
+    note right: Don't forget!\nMemory leak otherwise
+    
+    :ptr = nullptr;|
+    note right: Prevent dangling pointer
+  else (no - stack variable)
+    :int x = 10;\nint* ptr = &x;|
+    
+    if (Check before use?) then (yes)
+      :if(ptr != nullptr)\n  *ptr = 20;|
+      note right: ✅ SAFE
+    else (no)
+      :*ptr = 20;|
+      note right: ⚠️ Risk if null
+    endif
+  endif
+else (no - always has value)
+  :Use Reference (int&)|
+  
+  :int x = 10;\nint& ref = x;|
+  note right: Must initialize\nCannot be null
+  
+  :ref = 20;|
+  note right: ✅ Always safe\nNo null check needed
+endif
+
+if (Returning from function?) then (yes)
+  
+  if (Local variable?) then (yes)
+    :❌ NEVER return address!|
+    stop
+  else (class member?)
+    :✅ Safe to return|
+  endif
+  
+else (no)
+  :Continue using|
+endif
+
+stop
+
+@enduml

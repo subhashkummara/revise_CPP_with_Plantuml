@@ -1,0 +1,38 @@
+@startuml Hash_Map_Approach
+!theme plain
+
+title Hash Map Approach for Two Sum (Target = 10)
+
+start
+
+:Initialize HashMap;
+:target = 10;
+
+partition "Iterate Array [1,2,3,4,5,6,7,8,9]" {
+  :i=0, val=1;
+  :complement = 10-1 = 9;
+  :9 not in map;
+  :Add {1:0} to map;
+  
+  :i=1, val=2;
+  :complement = 10-2 = 8;
+  :8 not in map;
+  :Add {2:1} to map;
+  
+  :...continue...;
+  
+  :i=8, val=9;
+  :complement = 10-9 = 1;
+  :1 found in map!;
+  :Return indices [0,8];
+}
+
+stop
+
+note right
+  Time: O(n)
+  Space: O(n)
+  Only one pass needed!
+end note
+
+@enduml

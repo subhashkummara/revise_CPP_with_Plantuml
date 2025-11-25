@@ -1,0 +1,90 @@
+@startuml Memory_Layout
+!theme plain
+
+title Memory Layout: Base* obj = new derived()
+
+rectangle "Stack Memory" #lightyellow {
+  card "obj (Base*)" as ptr {
+    **Type:** Base*
+    **Value:** 0x5000
+    **Points to:** derived object
+  }
+}
+
+rectangle "Heap Memory (0x5000)" #lightblue {
+  package "derived Object" {
+    rectangle "Base Part" #lightgreen {
+      card "a (private)" as a {
+        Offset: +0
+        Value: 0
+        **Not accessible via obj**
+      }
+      
+      card "b (private)" as b {
+        Offset: +4
+        Value: 0
+        **Not accessible via obj**
+      }
+      
+      card "x (public)" as x {
+        Offset: +8
+        Value: 0
+        **Accessible via obj**
+      }
+      
+      card "y (public)" as y {
+        Offset: +12
+        Value: 0
+        **Accessible via obj**
+      }
+    }
+    
+    rectangle "derived Part" #pink {
+      card "c (private)" as c {
+        Offset: +16
+        Value: 0
+        **Not accessible via obj**
+      }
+      
+      card "d (private)" as d {
+        Offset: +20
+        Value: 0
+        **Not accessible via obj**
+      }
+      
+      card "p (public)" as p {
+        Offset: +24
+        Value: 0
+        **Not accessible via obj**
+      }
+      
+      card "q (public)" as q {
+        Offset: +28
+        Value: 0
+        **Not accessible via obj**
+      }
+    }
+  }
+}
+
+ptr -down-> a: Points to Base part
+
+note right of ptr
+  **Pointer Type: Base***
+  • Can only access Base members
+  • Cannot see derived part
+  • Static type: Base*
+  • Dynamic type: derived
+end note
+
+note bottom of "derived Part"
+  **Object Slicing Effect:**
+  Because obj is Base*, you can only
+  access Base members (x, y, methodA)
+  
+  Cannot access:
+  • p, q (derived public members)
+  • methodB (derived method)
+end note
+
+@enduml

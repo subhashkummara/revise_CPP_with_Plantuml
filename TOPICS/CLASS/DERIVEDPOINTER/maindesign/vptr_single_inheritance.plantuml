@@ -1,0 +1,83 @@
+@startuml VPtr_Single_Inheritance
+!theme plain
+
+title vptr in Single Inheritance - ONE vptr Per Object
+
+package "Single Inheritance Chain" #lightgreen {
+  
+  class Base {
+    + virtual void f()
+    - int a
+  }
+  
+  class Middle {
+    + void f() override
+    + virtual void h()
+    - int b
+  }
+  
+  class GrandChild {
+    + void f() override
+    + void h() override
+    - int c
+  }
+  
+  Base <|-- Middle
+  Middle <|-- GrandChild
+  
+  note right of GrandChild
+    **Memory Layout:**
+    [vptr][a][b][c]
+    
+    **Only ONE vptr!**
+    
+    During construction:
+    1. Base ctor: vptr → Base vtable
+    2. Middle ctor: vptr → Middle vtable
+    3. GrandChild ctor: vptr → GrandChild vtable
+    
+    **Final vptr points to:**
+    GrandChild vtable
+    
+    **Size:** 8 + 4 + 4 + 4 = 20 bytes
+    (ONE vptr + three ints)
+  end note
+}
+
+package "What Each vtable Contains" #lightblue {
+  
+  card BaseVTable [
+    **Base vtable:**
+    [type_info]
+    [~Base]
+    [Base::f]
+  ]
+  
+  card MiddleVTable [
+    **Middle vtable:**
+    [type_info]
+    [~Middle]
+    [Middle::f]  ← overridden
+    [Middle::h]  ← new
+  ]
+  
+  card GrandChildVTable [
+    **GrandChild vtable:**
+    [type_info]
+    [~GrandChild]
+    [GrandChild::f]  ← overridden
+    [GrandChild::h]  ← overridden
+  ]
+  
+  BaseVTable -down-> MiddleVTable
+  MiddleVTable -down-> GrandChildVTable
+}
+
+note bottom
+  **Key Point:**
+  Single inheritance = ONE vptr
+  vptr is UPDATED during construction
+  NOT multiple vptrs per level
+end note
+
+@enduml

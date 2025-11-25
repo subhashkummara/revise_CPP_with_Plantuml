@@ -1,0 +1,40 @@
+@startuml CPP_Classes_Part3
+!theme plain
+
+title Construction & Destruction Order
+
+package "Object Lifecycle" {
+  
+  card Construction [
+    **Construction Order:**
+    1. Allocate memory
+    2. Base constructor
+       - Initialize vptr
+       - Initialize members
+    3. Derived constructor
+       - Update vptr
+       - Initialize members
+    
+    Base -> Derived (top to bottom)
+  ]
+  
+  card Destruction [
+    **Destruction Order:**
+    1. Derived destructor
+       - Cleanup derived members
+    2. Base destructor
+       - Cleanup base members
+    3. Free memory
+    
+    Derived -> Base (bottom to top)
+  ]
+  
+  Construction -right-> Destruction
+  
+  note bottom of Destruction
+    CRITICAL: Base destructor
+    MUST be virtual!
+  end note
+}
+
+@enduml

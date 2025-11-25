@@ -1,0 +1,79 @@
+@startuml Supply_Chain_Analogy
+!theme plain
+
+title Supply Chain Stopped (Dangling Pointer)
+
+actor "Supplier\n(Your Code)" as supplier
+actor "ptr\n(Delivery Service)" as deliverysvc
+rectangle "0x5000\nSubhash's Warehouse\n(Memory)" as warehouse
+
+note over supplier
+  Has products to deliver
+  Calls: *ptr = newProduct;
+end note
+
+supplier -right-> deliverysvc: "Deliver to ptr's address"
+
+== SCENARIO 1: Active Business ==
+
+deliverysvc -down-> warehouse: Delivers to 0x5000
+note right of warehouse
+  ✅ Warehouse open
+  ✅ Receives product
+  ✅ Supply chain working
+end note
+
+== SCENARIO 2: After 'delete' (Closed Warehouse) ==
+
+note over warehouse #pink
+  ❌ CLOSED!
+  Building demolished
+  But ptr still has GPS: 0x5000
+end note
+
+deliverysvc -down-> warehouse: Still tries to deliver to 0x5000!
+
+note right of warehouse
+  ❌ Three possibilities:
+  
+  1. Empty lot (Segfault)
+     Truck crashes into nothing
+  
+  2. New business there (Corruption)
+     Delivers cars to pizza shop!
+  
+  3. Abandoned building (Zombie)
+     Leaves products in rubble
+     Someone else finds them later
+  
+  **Result: SUPPLY CHAIN STOPPED!**
+end note
+
+== SCENARIO 3: After 'ptr = nullptr' (Updated GPS) ==
+
+note over deliverysvc #lightgreen
+  ptr = nullptr
+  GPS updated: "No destination"
+end note
+
+supplier -right-> deliverysvc: "Deliver to ptr's address"
+
+alt Check destination first
+  deliverysvc -> deliverysvc: if(ptr != nullptr)
+  note right
+    ✅ Check: "Do I have destination?"
+    ✅ Answer: "No (nullptr)"
+    ✅ Action: "Don't deliver"
+    ✅ Supplier notified: "No warehouse"
+  end note
+else Direct delivery (dangerous)
+  deliverysvc -[hidden]-> warehouse
+  note right
+    Without check, would try
+    to deliver to address 0x0
+    Immediate crash
+    But at least PREDICTABLE
+  end note
+end
+
+@enduml

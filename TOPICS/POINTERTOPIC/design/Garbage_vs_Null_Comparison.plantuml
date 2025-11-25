@@ -1,0 +1,64 @@
+@startuml Garbage_vs_Null_Comparison
+!theme plain
+
+title Uninitialized (Garbage) vs Null Pointer - Why Both Crash
+
+rectangle "Uninitialized Pointer" #pink {
+  card "int* ptr;" as g1
+  card "ptr = 0x12345678\n(RANDOM garbage)" as g2
+  card "Could be ANYWHERE\nin memory" as g3
+  
+  g1 -down-> g2
+  g2 -down-> g3
+  
+  rectangle "What Happens" {
+    card "*ptr = 10;" as g4
+    card "CPU tries to write to\n0x12345678" as g5
+    card "OS checks: Do you\nown this address?" as g6
+    card "NO! ❌ SEGFAULT" as g7
+    
+    g4 -down-> g5
+    g5 -down-> g6
+    g6 -down-> g7
+  }
+  
+  note bottom
+    **Unpredictable!**
+    • May crash immediately
+    • May crash later
+    • May corrupt data
+    • May "appear to work"
+    **Most dangerous!**
+  end note
+}
+
+rectangle "Null Pointer" #lightblue {
+  card "int* ptr = nullptr;" as n1
+  card "ptr = 0x00000000\n(KNOWN value)" as n2
+  card "Address 0x0 is\nALWAYS invalid" as n3
+  
+  n1 -down-> n2
+  n2 -down-> n3
+  
+  rectangle "What Happens" {
+    card "*ptr = 10;" as n4
+    card "CPU tries to write to\n0x00000000" as n5
+    card "OS checks: This is\nNULL page!" as n6
+    card "GUARANTEED ❌ SEGFAULT" as n7
+    
+    n4 -down-> n5
+    n5 -down-> n6
+    n6 -down-> n7
+  }
+  
+  note bottom
+    **Predictable!**
+    • ALWAYS crashes
+    • Crash is immediate
+    • Easy to debug
+    • Intentional protection
+    **Safer to debug!**
+  end note
+}
+
+@enduml

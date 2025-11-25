@@ -1,0 +1,66 @@
+@startuml Memory_Map
+!theme plain
+
+title Detailed Memory Map
+
+rectangle "Stack" #lightyellow {
+  card "0x7FFF1000: obj (Base*)" {
+    Value: 0x5000
+    Size: 8 bytes
+  }
+}
+
+rectangle "Heap" #lightblue {
+  card "0x5000: a (int)" {
+    Value: 0
+    Access: Private
+  }
+  
+  card "0x5004: b (int)" {
+    Value: 0
+    Access: Private
+  }
+  
+  card "0x5008: x (int)" {
+    Value: 0
+    Access: obj->x works
+  }
+  
+  card "0x500C: y (int)" {
+    Value: 0
+    Access: obj->y works
+  }
+  
+  card "0x5010: c (int)" {
+    Value: 0
+    Access: Hidden
+  }
+  
+  card "0x5014: d (int)" {
+    Value: 0
+    Access: Hidden
+  }
+  
+  card "0x5018: p (int)" {
+    Value: 0
+    Access: Hidden
+  }
+  
+  card "0x501C: q (int)" {
+    Value: 0
+    Access: Hidden
+  }
+}
+
+note right of "Stack"
+  obj is Base*
+  Points to 0x5000
+end note
+
+note bottom of "Heap"
+  Total: 32 bytes
+  Base part: 16 bytes (accessible)
+  derived part: 16 bytes (hidden)
+end note
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml Sum_Approaches_Flowchart
+!define RECTANGLE class
+
+start
+
+:Given Array [1,2,3,4,5,6,7,8,9];
+
+if (What type of sum problem?) then (Two Sum with Target)
+  :Use Hash Map Approach;
+  :Time: O(n), Space: O(n);
+  stop
+elseif (All Possible Pairs) then (yes)
+  if (Need to print all pairs?) then (yes)
+    :Use Brute Force;
+    :Time: O(n²), Space: O(1);
+  else (no)
+    :Use Combinatorics;
+    :Count = n*(n-1)/2;
+  endif
+  stop
+elseif (Subarray Sum) then (yes)
+  :Use Prefix Sum;
+  :Time: O(n), Space: O(n);
+  stop
+elseif (Array is Sorted) then (yes)
+  :Use Two Pointer;
+  :Time: O(n), Space: O(1);
+  stop
+else (Count pairs with sum)
+  :Use Hash Map;
+  :Time: O(n), Space: O(n);
+  stop
+endif
+
+@enduml

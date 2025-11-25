@@ -1,0 +1,49 @@
+@startuml Sequence_Flow
+!theme plain
+
+title Execution Sequence
+
+participant "main()" as main
+participant "Heap" as heap
+participant "Base" as base
+participant "derived" as der
+participant "obj" as ptr
+
+activate main
+
+main -> heap: new derived()
+activate heap
+
+heap -> base: Call Base constructor
+activate base
+base -> base: Initialize a,b,x,y to 0
+deactivate base
+
+heap -> der: Call derived constructor
+activate der
+der -> der: Initialize c,d,p,q to 0
+deactivate der
+
+heap --> main: Return address 0x5000
+deactivate heap
+
+main -> ptr: obj = 0x5000
+activate ptr
+
+main -> ptr: obj->methodA()
+ptr -> base: Call methodA()
+activate base
+base -> base: Print message
+deactivate base
+
+main -> main: return 0
+
+note right of ptr
+  Memory Leak!
+  ptr never deleted
+end note
+
+deactivate ptr
+deactivate main
+
+@enduml

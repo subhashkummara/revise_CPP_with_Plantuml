@@ -1,0 +1,42 @@
+@startuml Simple_Summary
+!theme plain
+
+title Base* obj = new derived() - Simple View
+
+card Step1 [
+  **Step 1: Allocate**
+  new derived()
+  Creates 32-byte object
+  at address 0x5000
+]
+
+card Step2 [
+  **Step 2: Initialize**
+  Base part: a,b,x,y = 0
+  derived part: c,d,p,q = 0
+]
+
+card Step3 [
+  **Step 3: Assign**
+  obj (Base*) = 0x5000
+  Can only see Base part
+]
+
+card Step4 [
+  **Step 4: Call**
+  obj->methodA()
+  Works - Base method
+]
+
+card Step5 [
+  **Step 5: Leak!**
+  No delete obj
+  Memory leaked
+]
+
+Step1 -down-> Step2
+Step2 -down-> Step3
+Step3 -down-> Step4
+Step4 -down-> Step5
+
+@enduml

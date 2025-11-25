@@ -1,0 +1,64 @@
+@startuml Memory_Layout
+!theme plain
+
+title Memory Layout: Pointer vs Reference
+
+rectangle "Stack Memory" {
+  
+  package "Pointer Example" as PE {
+    rectangle "int x = 10" as mem1 {
+      card "Address: 0x1000\nValue: 10" as v1
+    }
+    
+    rectangle "int* ptr = &x" as mem2 {
+      card "Address: 0x2000\nValue: 0x1000" as v2
+    }
+    
+    mem2 -down-> mem1: points to
+    
+    note right of mem2
+      ptr is a VARIABLE
+      It stores 0x1000
+      *ptr accesses x's value
+    end note
+  }
+  
+  package "Reference Example" as RE {
+    rectangle "int x = 10" as mem3 {
+      card "Address: 0x3000\nValue: 10" as v3
+    }
+    
+    rectangle "int& ref = x" as mem4 {
+      card "Same as x\nNo separate storage" as v4
+    }
+    
+    mem4 -down-> mem3: IS (alias)
+    
+    note right of mem4
+      ref is NOT a variable
+      Same address as x
+      No extra memory
+    end note
+  }
+}
+
+rectangle "Heap Memory" {
+  package "Dynamic Allocation" as DA {
+    rectangle "int* heapPtr = new int(42)" as heap1 {
+      card "Heap: 0x5000\nValue: 42" as hv1
+    }
+    
+    rectangle "Stack: heapPtr variable" as heap2 {
+      card "Stack: 0x6000\nValue: 0x5000" as hv2
+    }
+    
+    heap2 -down-> heap1: points to
+    
+    note bottom
+      Must delete heapPtr!
+      Memory leak if forgotten
+    end note
+  }
+}
+
+@enduml

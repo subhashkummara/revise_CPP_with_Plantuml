@@ -1,0 +1,64 @@
+@startuml SUM_Return_Example
+!theme plain
+
+title Your SUM Code: Why It's Safe
+
+participant "main()" as main
+participant "obj\n(findTheSolution)" as obj
+participant "result[2]\n(class member)" as result
+
+activate main
+
+main -> obj: **create object**
+activate obj
+note right: obj created on stack
+
+obj -> result: **allocate member**
+activate result
+note right
+  result[2] lives
+  inside obj
+end note
+
+main -> obj: findanswer(...)
+note right: call method
+
+obj -> result: **fill result[0], result[1]**
+note right: modify member
+
+obj --> main: **return result**
+note right
+  Returns pointer to
+  class member result[]
+end note
+
+main -> result: **access result[0], result[1]**
+note right
+  ✅ SAFE!
+  obj still alive
+  result still valid
+end note
+
+deactivate result
+deactivate obj
+note right
+  obj destroyed
+  result destroyed
+  pointer NOW invalid
+end note
+
+deactivate main
+
+note bottom
+  **Why Safe?**
+  • result is class member
+  • Lives as long as obj lives
+  • obj alive during access
+  • ✅ No dangling pointer
+  
+  **Danger if:**
+  findTheSolution().findanswer(...)
+  // Temp object dies immediately!
+end note
+
+@enduml

@@ -1,0 +1,70 @@
+@startuml Return_From_Function_Explained
+!theme plain
+
+title Returning Pointers/References from Functions
+
+|Local Variable (DANGER)|
+start
+:Function called;
+:int temp = 42;\n(on stack);
+note right
+  Lives only during function
+  Stack: 0x7FFF1000
+end note
+
+:return &temp;
+:Function ends;
+note right
+  **temp DESTROYED!**
+  Stack unwound
+  0x7FFF1000 = garbage
+end note
+
+:Caller gets ptr;
+#red:*ptr = 10;
+note right: ❌ CRASH!
+end
+
+|Class Member (SAFE)|
+:Object created;
+:Member exists in object;
+note right: Lives with object
+:return &member;
+:Function ends;
+note right
+  Object still alive
+  Member still valid ✅
+end note
+
+:Caller gets ptr;
+#green:*ptr = 10;
+note right: ✅ SAFE
+end
+
+|Static Variable (SAFE)|
+:static int value = 42;
+note right: Lives entire program
+:return &value;
+:Function ends;
+note right: Static still exists ✅
+:Caller gets ptr;
+#green:*ptr = 10;
+note right: ✅ SAFE
+stop
+
+|Heap Memory (SAFE*)|
+:int* ptr = new int(42);
+note right: Allocated on heap
+:return ptr;
+:Function ends;
+note right: Heap still exists ✅
+:Caller gets ptr;
+if (Deletes later?) then (yes)
+  :delete ptr;
+  #green:✅ No leak;
+else (no)
+  #orange:⚠️ LEAK;
+endif
+stop
+
+@enduml

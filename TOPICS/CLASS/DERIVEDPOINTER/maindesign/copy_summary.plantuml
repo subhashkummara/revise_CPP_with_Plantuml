@@ -1,0 +1,54 @@
+@startuml Copy_Summary
+!theme plain
+
+title Shallow vs Deep Copy Summary
+
+card ShallowCopy [
+  **Shallow Copy:**
+  Copies pointer values
+  Multiple objects point to same memory
+  Double delete when destructed
+  CRASH or undefined behavior
+  
+  Default compiler behavior
+  for classes with pointers
+]
+
+card DeepCopy [
+  **Deep Copy:**
+  Creates new memory
+  Copies actual data
+  Each object owns its memory
+  Safe destruction
+  
+  Must implement manually
+  Copy constructor
+  Copy assignment operator
+]
+
+card Modern [
+  **Modern C++ (Best):**
+  Use smart pointers
+  unique_ptr, shared_ptr
+  vector, string
+  
+  Automatic deep copy
+  No manual memory management
+  Compiler does it right
+]
+
+ShallowCopy -down-> DeepCopy : Fix with
+DeepCopy -down-> Modern : Better: Use
+
+note bottom
+  **Key Points:**
+  - Shallow copy = copy pointers (dangerous)
+  - Deep copy = copy data (safe but manual)
+  - Modern C++ = use smart pointers (best)
+  
+  **This connects to virtual destructor:**
+  All need proper destruction through
+  base pointers - hence virtual destructor!
+end note
+
+@enduml

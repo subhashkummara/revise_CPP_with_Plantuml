@@ -1,0 +1,69 @@
+@startuml Complete_Flow
+!theme plain
+
+title Complete Execution Flow with Memory States
+
+start
+
+:Program Entry;
+
+:Create main() frame on stack;
+note right
+  Stack State:
+  main() frame created
+end note
+
+:Line: Base *obj = new derived();
+
+partition "Memory Allocation" {
+  :Request 32 bytes from heap;
+  :Heap returns address 0x5000;
+  :Call Base constructor;
+  note right
+    Initialize:
+    a = 0, b = 0
+    x = 0, y = 0
+  end note
+  
+  :Call derived constructor;
+  note right
+    Initialize:
+    c = 0, d = 0
+    p = 0, q = 0
+  end note
+  
+  :obj = 0x5000;
+}
+
+note right
+  Memory State:
+  Stack: obj = 0x5000 (Base*)
+  Heap: derived object at 0x5000
+end note
+
+:Line: obj->methodA();
+
+:Compiler checks obj type;
+note right: Static type = Base*
+
+:Find methodA in Base class;
+
+:Execute Base::methodA();
+
+:Print "This is method A of Base class";
+
+:Line: return 0;
+
+#pink:Memory Leak Warning!;
+note right
+  obj never deleted!
+  32 bytes leaked
+  
+  Should add:
+  delete obj;
+  obj = nullptr;
+end note
+
+stop
+
+@enduml

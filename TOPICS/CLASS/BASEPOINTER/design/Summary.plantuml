@@ -1,0 +1,56 @@
+@startuml Summary
+!theme plain
+
+title Summary: Base* obj = new derived()
+
+card "Code" as code {
+  **Base *obj = new derived();**
+  obj->methodA();
+}
+
+package "What Happens" {
+  card "1. Memory Allocation" as mem {
+    • Allocate 32 bytes on heap
+    • Address: 0x5000
+    • Type: derived object
+  }
+  
+  card "2. Construction" as cons {
+    • Base part initialized first
+    • derived part initialized second
+    • All members set to 0
+  }
+  
+  card "3. Pointer Assignment" as ptr {
+    • obj (Base*) = 0x5000
+    • Points to derived object
+    • Can only access Base part
+  }
+  
+  card "4. Method Call" as method {
+    • obj->methodA() works ✅
+    • Calls Base::methodA()
+    • Prints message
+  }
+  
+  card "5. Memory Leak" as leak {
+    • obj never deleted ❌
+    • 32 bytes leaked
+    • Should call delete obj
+  }
+}
+
+code -down-> mem
+mem -down-> cons
+cons -down-> ptr
+ptr -down-> method
+method -down-> leak
+
+note right of leak #pink
+  **Fix Required:**
+  
+  delete obj;
+  obj = nullptr;
+end note
+
+@enduml

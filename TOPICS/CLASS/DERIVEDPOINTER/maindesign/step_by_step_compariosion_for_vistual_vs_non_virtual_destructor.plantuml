@@ -1,0 +1,68 @@
+@startuml Step_By_Step_Comparison
+!theme plain
+
+title Step-by-Step: Virtual vs Non-Virtual Destructor
+
+|Non-Virtual Destructor|
+start
+:Base* ptr = new Derived();
+:Memory allocated;
+note right
+  Heap:
+  [vptr][Base data][Derived data]
+end note
+
+:delete ptr;
+:Check ptr type;
+note right: ptr is Base*
+
+:Look for ~Base();
+note right: NOT virtual
+
+#pink:Call ONLY ~Base();
+note right
+  Derived destructor
+  NEVER called!
+end note
+
+:Free memory;
+note right
+  Base part cleaned
+  Derived part LEAKED!
+end note
+
+#red:MEMORY LEAK!;
+stop
+
+|Virtual Destructor|
+start
+:Base* ptr = new Derived();
+:Memory allocated;
+note right
+  Heap:
+  [vptr][Base data][Derived data]
+  vptr → Derived vtable
+end note
+
+:delete ptr;
+:Follow vptr;
+note right: vptr points to Derived vtable
+
+:Find destructor in vtable;
+note right: Points to ~Derived()
+
+#lightgreen:Call ~Derived();
+note right: Clean Derived data
+
+#lightgreen:Call ~Base();
+note right: Clean Base data
+
+:Free memory;
+note right
+  ALL memory cleaned!
+end note
+
+#green:SUCCESS!;
+stop
+
+@enduml

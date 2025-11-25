@@ -1,0 +1,59 @@
+@startuml Valid_vs_Invalid
+!theme plain
+
+title Valid vs Invalid Pointer Assignments
+
+package "VALID: Upcasting" #lightgreen {
+  card "Base* obj = new derived();" as valid1
+  
+  rectangle "Memory" {
+    card "Full derived object (32 bytes)" as obj1 {
+      Base part: a,b,x,y
+      derived part: c,d,p,q
+    }
+    
+    card "Base* pointer" as ptr1 {
+      Sees only Base part
+      Safe - Base part exists
+    }
+  }
+  
+  ptr1 --> obj1
+  
+  note bottom
+    **Why Valid:**
+    • derived object contains Base
+    • Base* can point to derived
+    • Only accesses Base members
+    • Safe - no out of bounds
+  end note
+}
+
+package "INVALID: Downcasting without check" #pink {
+  card "derived* obj = new Base();" as invalid
+  
+  rectangle "Memory" {
+    card "Base object (16 bytes)" as obj2 {
+      Base part only: a,b,x,y
+      NO derived part!
+    }
+    
+    card "derived* pointer" as ptr2 {
+      Expects full derived
+      Tries to access c,d,p,q
+      OUT OF BOUNDS!
+    }
+  }
+  
+  ptr2 -down-> obj2
+  
+  note bottom #red
+    **Why Invalid:**
+    • Base object too small
+    • derived* expects more memory
+    • Accessing p,q causes crash
+    • Compiler prevents this
+  end note
+}
+
+@enduml

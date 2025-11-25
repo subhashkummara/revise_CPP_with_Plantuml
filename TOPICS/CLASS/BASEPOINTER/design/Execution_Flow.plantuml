@@ -1,0 +1,180 @@
+@startuml Execution_Flow
+!theme plain
+
+title Step-by-Step Execution: Base* obj = new derived()
+
+start
+
+#lightgreen:**Step 1: Program Start**;
+:int main();
+note right
+  Stack frame created for main()
+end note
+
+#yellow:**Step 2: Object Creation**;
+:Base *obj = new derived();
+note right
+  **What happens:**
+  1. Allocate memory for derived object
+  2. Call derived constructor
+  3. Initialize Base part first
+  4. Then initialize derived part
+  5. Return address to obj
+end note
+
+partition "Memory Allocation Details" {
+  :Allocate heap memory;
+  note right
+    Size = sizeof(derived)
+    = 4 bytes × 8 members
+    = 32 bytes
+  end note
+  
+  :Initialize Base part;
+  note right
+    a = 0
+    b = 0
+    x = 0
+    y = 0
+  end note
+  
+  :Initialize derived part;
+  note right
+    c = 0
+    d = 0
+    p = 0
+    q = 0
+  end note
+  
+  :Store address in obj;
+  note right
+    obj (Base*) = 0x5000
+    Points to derived object
+  end note
+}
+
+#lightblue:**Step 3: Method Call**;
+:obj->methodA();
+
+partition "Method Resolution" {
+  :Check obj type;
+  note right
+    Static type: Base*
+    Can call Base methods
+  end note
+  
+  :Find methodA in Base;
+  note right
+    methodA() found in Base class
+  end note
+  
+  :Execute methodA();
+  note right
+    cout << "This is method A of Base class"
+  end note
+}
+
+#orange:**Step 4: Return**;
+:return 0;
+
+note right #pink
+  **MEMORY LEAK!**
+  • obj allocated with new
+  • Never deleted
+  • Memory not freed
+  
+  **Should add:**
+  delete obj;
+  obj = nullptr;
+end note
+
+stop
+
+@enduml@startuml Memory_Layout
+!theme plain
+
+title Memory Layout: Base* obj = new derived()
+
+package "Stack Memory" #lightyellow {
+  component "obj" as ptr {
+    Type: Base*
+    Value: 0x5000
+    Points to derived object
+  }
+}
+
+package "Heap Memory at 0x5000" #lightblue {
+  
+  package "Base Part" #lightgreen {
+    card "a (private)" {
+      Offset: +0
+      Value: 0
+      Access: NO
+    }
+    
+    card "b (private)" {
+      Offset: +4
+      Value: 0
+      Access: NO
+    }
+    
+    card "x (public)" {
+      Offset: +8
+      Value: 0
+      Access: YES via obj->x
+    }
+    
+    card "y (public)" {
+      Offset: +12
+      Value: 0
+      Access: YES via obj->y
+    }
+  }
+  
+  package "derived Part" #pink {
+    card "c (private)" {
+      Offset: +16
+      Value: 0
+      Access: NO
+    }
+    
+    card "d (private)" {
+      Offset: +20
+      Value: 0
+      Access: NO
+    }
+    
+    card "p (public)" {
+      Offset: +24
+      Value: 0
+      Access: NO (hidden)
+    }
+    
+    card "q (public)" {
+      Offset: +28
+      Value: 0
+      Access: NO (hidden)
+    }
+  }
+}
+
+ptr --> "Base Part": points to
+
+note right of ptr
+  Pointer Type: Base*
+  Can only access Base members
+  Cannot see derived part
+  Static type: Base*
+  Dynamic type: derived
+end note
+
+note bottom of "derived Part"
+  Object Slicing Effect:
+  obj can only access x, y, methodA
+  
+  Cannot access:
+  p, q, methodB
+  (hidden by Base*)
+end note
+
+@enduml

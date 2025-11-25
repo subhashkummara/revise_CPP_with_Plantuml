@@ -1,0 +1,55 @@
+@startuml Memory_Leak_Example
+!theme plain
+
+title Memory Leak with Non-Virtual Destructor
+
+package "Without Virtual Destructor" #pink {
+  
+  card Setup [
+    **Class Definition:**
+    
+    class Base {
+      int* data;
+      ~Base() {
+        delete data;  // Clean Base
+      }
+    };
+    
+    class Derived : public Base {
+      int* moreData;
+      ~Derived() {
+        delete moreData;  // Clean Derived
+      }
+    };
+  ]
+  
+  card Usage [
+    **Usage:**
+    
+    Base* ptr = new Derived();
+    // Creates object:
+    // [vptr][data][moreData]
+    
+    delete ptr;
+  ]
+  
+  card Problem [
+    **What Gets Called:**
+    
+    ❌ ~Derived() NOT called
+    ✅ ~Base() called
+    
+    **Memory State:**
+    data → deleted ✅
+    moreData → LEAKED! ❌
+    
+    **Leaked Memory:**
+    Whatever moreData pointed to
+    is NEVER freed!
+  ]
+  
+  Setup -down-> Usage
+  Usage -down-> Problem
+}
+
+@enduml

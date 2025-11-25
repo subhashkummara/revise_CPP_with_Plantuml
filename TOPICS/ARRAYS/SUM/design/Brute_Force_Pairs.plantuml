@@ -1,0 +1,41 @@
+@startuml Brute_Force_Pairs
+!theme plain
+
+title Brute Force Pair Generation\nArray: [1,2,3,4,5,6,7,8,9]
+
+rectangle "i=0 (val=1)" {
+  (1,2) as p1
+  (1,3) as p2
+  (1,4) as p3
+  (1,9) as p4
+  note right: 8 pairs
+}
+
+rectangle "i=1 (val=2)" {
+  (2,3) as p5
+  (2,4) as p6
+  (2,9) as p7
+  note right: 7 pairs
+}
+
+rectangle "i=2 (val=3)" {
+  (3,4) as p8
+  (3,9) as p9
+  note right: 6 pairs
+}
+
+rectangle "..." {
+  note right: continues...
+}
+
+rectangle "i=7 (val=8)" {
+  (8,9) as p10
+  note right: 1 pair
+}
+
+note bottom
+  Total Pairs = 8+7+6+5+4+3+2+1 = 36
+  Formula: n*(n-1)/2 where n=9
+end note
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml CPP_Classes_Part1
+!theme plain
+
+title C++ Classes - Fundamentals & Inheritance Types
+
+package "Class Basics" #lightblue {
+  class BasicClass {
+    - int privateData
+    # int protectedData
+    + int publicData
+    --
+    + BasicClass()
+    + ~BasicClass()
+    + void method()
+  }
+  
+  note right of BasicClass
+    Memory Layout:
+    Stack: data members
+    Size: sum of all members
+  end note
+}
+
+package "Inheritance Types" #lightyellow {
+  
+  class BaseClass {
+    - int a
+    # int m
+    + int x
+  }
+  
+  class PublicDerived {
+    + public
+  }
+  
+  class ProtectedDerived {
+    + protected
+  }
+  
+  class PrivateDerived {
+    + private
+  }
+  
+  BaseClass <|-- PublicDerived : public
+  BaseClass <|-- ProtectedDerived : protected
+  BaseClass <|-- PrivateDerived : private
+}
+
+@enduml

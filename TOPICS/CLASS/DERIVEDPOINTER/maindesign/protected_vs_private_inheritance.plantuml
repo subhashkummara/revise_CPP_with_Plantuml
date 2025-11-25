@@ -1,0 +1,72 @@
+@startuml Protected_vs_Private_Inheritance
+!theme plain
+
+title Protected vs Private Inheritance - The Subtle Difference
+
+package "Scenario: Three Level Hierarchy" {
+  
+  class Base {
+    - int privateData
+    # int protectedData
+    + int publicData
+  }
+  
+  class ProtectedDerived {
+    **Protected Inheritance**
+    --
+    Base::protectedData → protected
+    Base::publicData → protected
+    --
+    Can be inherited FURTHER
+    by GrandChild
+  }
+  
+  class PrivateDerived {
+    **Private Inheritance**
+    --
+    Base::protectedData → private
+    Base::publicData → private
+    --
+    STOPS here!
+    GrandChild cannot inherit
+  }
+  
+  class GrandChildProtected {
+    **Can access:**
+    protectedData (inherited)
+    publicData (inherited)
+    --
+    Inheritance chain continues
+  }
+  
+  class GrandChildPrivate {
+    **Cannot access:**
+    Nothing from Base!
+    --
+    Inheritance chain BROKEN
+  }
+  
+  Base <|-- ProtectedDerived : protected
+  Base <|-- PrivateDerived : private
+  
+  ProtectedDerived <|-- GrandChildProtected
+  PrivateDerived <|-- GrandChildPrivate
+  
+  note right of ProtectedDerived
+    **Protected Inheritance:**
+    Base members become protected
+    
+    Effect: GrandChild CAN
+    inherit them further
+  end note
+  
+  note right of PrivateDerived
+    **Private Inheritance:**
+    Base members become private
+    
+    Effect: GrandChild CANNOT
+    access them (chain broken)
+  end note
+}
+
+@enduml

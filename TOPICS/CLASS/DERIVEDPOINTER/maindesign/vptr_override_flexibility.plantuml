@@ -1,0 +1,112 @@
+@startuml VPtr_Override_Flexibility
+!theme plain
+
+title Virtual Functions - Override at ANY Level (Not Required at Every Level)
+
+package "Scenario 1: Override at Each Level" #lightgreen {
+  
+  class Base1 {
+    + virtual void f()
+  }
+  
+  class Middle1 {
+    + void f() override
+  }
+  
+  class GrandChild1 {
+    + void f() override
+  }
+  
+  Base1 <|-- Middle1
+  Middle1 <|-- GrandChild1
+  
+  note right of GrandChild1
+    **Each level overrides**
+    
+    Base1::f()
+    Middle1::f() overrides
+    GrandChild1::f() overrides
+    
+    GrandChild1 vtable:
+    [~GrandChild1]
+    [GrandChild1::f]
+  end note
+}
+
+package "Scenario 2: Skip Middle Level" #lightblue {
+  
+  class Base2 {
+    + virtual void f()
+  }
+  
+  class Middle2 {
+    // NOT overriding f()
+  }
+  
+  class GrandChild2 {
+    + void f() override
+  }
+  
+  Base2 <|-- Middle2
+  Middle2 <|-- GrandChild2
+  
+  note right of GrandChild2
+    **Middle2 doesn't override**
+    
+    Base2::f()
+    Middle2 inherits Base2::f()
+    GrandChild2::f() overrides
+    
+    Middle2 vtable:
+    [~Middle2]
+    [Base2::f]  ← inherited
+    
+    GrandChild2 vtable:
+    [~GrandChild2]
+    [GrandChild2::f]  ← overrides
+  end note
+}
+
+package "Scenario 3: Only Base Implementation" #pink {
+  
+  class Base3 {
+    + virtual void f()
+  }
+  
+  class Middle3 {
+    // NOT overriding
+  }
+  
+  class GrandChild3 {
+    // NOT overriding
+  }
+  
+  Base3 <|-- Middle3
+  Middle3 <|-- GrandChild3
+  
+  note right of GrandChild3
+    **No one overrides**
+    
+    Base3::f()
+    Middle3 inherits Base3::f()
+    GrandChild3 inherits Base3::f()
+    
+    All vtables point to:
+    [Base3::f]
+    
+    Same function used by all!
+  end note
+}
+
+note bottom
+  **Key Point:**
+  You DON'T have to override at every level!
+  Override only when you need different behavior.
+  
+  Virtual = "CAN be overridden"
+  NOT "MUST be overridden"
+  
+  (Unless it's pure virtual = 0)
+end note
+
+@enduml

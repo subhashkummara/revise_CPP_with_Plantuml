@@ -1,0 +1,45 @@
+@startuml CPP_Classes_Part7
+!theme plain
+
+title Common Mistakes to Avoid
+
+card Mistake1 [
+  **Object Slicing**
+  
+  Derived d;
+  Base b = d;  // WRONG!
+  
+  Fix:
+  Base* b = &d;  // Pointer
+  Base& b = d;   // Reference
+]
+
+card Mistake2 [
+  **Virtual in Constructor**
+  
+  class Base {
+    Base() { virtualFunc(); }
+  }
+  
+  Issue: Calls Base version,
+  not Derived version
+  
+  Fix: Don't call virtual
+  in constructors
+]
+
+card Mistake3 [
+  **Non-virtual Destructor**
+  
+  class Base {
+    ~Base() { }  // WRONG!
+  }
+  
+  Fix:
+  virtual ~Base() { }
+]
+
+Mistake1 -down-> Mistake2
+Mistake2 -down-> Mistake3
+
+@enduml

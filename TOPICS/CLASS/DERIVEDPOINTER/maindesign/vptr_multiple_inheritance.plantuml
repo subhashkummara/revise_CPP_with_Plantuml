@@ -1,0 +1,40 @@
+@startuml VPtr_Multiple_Inheritance
+!theme plain
+
+title vptr in Multiple Inheritance - Multiple vptrs
+
+class Base1 {
+  + virtual void f()
+  - int a
+}
+
+class Base2 {
+  + virtual void g()
+  - int b
+}
+
+class Derived {
+  + void f() override
+  + void g() override
+  - int c
+}
+
+Base1 <|-- Derived
+Base2 <|-- Derived
+
+note right of Derived
+  **Memory Layout:**
+  [vptr1][a]    ← Base1 subobject
+  [vptr2][b]    ← Base2 subobject
+  [c]           ← Derived data
+  
+  **TWO vptrs!**
+  One for each base class
+  
+  vptr1 → Derived vtable for Base1
+  vptr2 → Derived vtable for Base2
+  
+  **Size:** 8 + 4 + 8 + 4 + 4 = 28 bytes
+end note
+
+@enduml

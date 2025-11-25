@@ -1,0 +1,46 @@
+@startuml CPP_Classes_Part5
+!theme plain
+
+title Virtual Destructor - Critical!
+
+package "Without Virtual Destructor" #pink {
+  card Problem [
+    class Base {
+      ~Base() { }  // NOT virtual
+    }
+    
+    Base* obj = new Derived();
+    delete obj;
+    
+    Result:
+    Only ~Base() called
+    ~Derived() NOT called
+    MEMORY LEAK!
+  ]
+}
+
+package "With Virtual Destructor" #lightgreen {
+  card Solution [
+    class Base {
+      virtual ~Base() { }
+    }
+    
+    Base* obj = new Derived();
+    delete obj;
+    
+    Result:
+    1. ~Derived() called
+    2. ~Base() called
+    All memory cleaned!
+  ]
+}
+
+Problem -right-> Solution
+
+note bottom
+  GOLDEN RULE:
+  If class has ANY virtual function,
+  destructor MUST be virtual!
+end note
+
+@enduml

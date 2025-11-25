@@ -1,0 +1,85 @@
+@startuml Inheritance_Chain
+!theme plain
+
+title Inheritance Chain: Protected vs Private
+
+package "Protected Inheritance Chain" #lightgreen {
+  
+  card "Base" as base1 {
+    protected: int data
+  }
+  
+  card "Middle" as mid1 {
+    **protected Base**
+    ----
+    data is protected
+    Accessible to Middle
+  }
+  
+  card "GrandChild" as grand1 {
+    **public Middle**
+    ----
+    data is protected
+    Accessible to GrandChild
+    Can inherit further
+  }
+  
+  card "GreatGrandChild" as great1 {
+    **public GrandChild**
+    ----
+    data is protected
+    Still accessible!
+  }
+  
+  base1 --> mid1 : protected
+  mid1 --> grand1 : public
+  grand1 --> great1 : public
+  
+  note right of great1
+    Protected inheritance:
+    Chain continues infinitely
+    Each level can access
+    Base members
+  end note
+}
+
+package "Private Inheritance Chain" #pink {
+  
+  card "Base" as base2 {
+    protected: int data
+  }
+  
+  card "Middle" as mid2 {
+    **private Base**
+    ----
+    data is private
+    Accessible to Middle only
+  }
+  
+  card "GrandChild" as grand2 {
+    **public Middle**
+    ----
+    data is NOT accessible
+    Inheritance STOPPED
+  }
+  
+  card "GreatGrandChild" as great2 {
+    **public GrandChild**
+    ----
+    data is NOT accessible
+    Forever blocked
+  }
+  
+  base2 --> mid2 : private
+  mid2 -[#red]-> grand2 : blocked
+  grand2 -[#red]-> great2 : blocked
+  
+  note right of great2
+    Private inheritance:
+    Chain STOPS at Middle
+    GrandChild and beyond
+    cannot access Base members
+  end note
+}
+
+@enduml

@@ -1,0 +1,68 @@
+@startuml Inheritance_Chain_Simple
+!theme plain
+
+title Inheritance Chain: Protected vs Private
+
+left to right direction
+
+package "Protected Chain" #lightgreen {
+  class Base1 {
+    # int data
+  }
+  
+  class Middle1 {
+    Access: protected
+    Can use data
+  }
+  
+  class GrandChild1 {
+    Access: protected
+    Can use data
+  }
+  
+  class Great1 {
+    Access: protected
+    Can use data
+  }
+  
+  Base1 <|-- Middle1 : protected
+  Middle1 <|-- GrandChild1 : public
+  GrandChild1 <|-- Great1 : public
+}
+
+package "Private Chain" #pink {
+  class Base2 {
+    # int data
+  }
+  
+  class Middle2 {
+    Access: private
+    Can use data
+  }
+  
+  class GrandChild2 {
+    Access: NONE
+    CANNOT use data
+  }
+  
+  class Great2 {
+    Access: NONE
+    CANNOT use data
+  }
+  
+  Base2 <|-- Middle2 : private
+  Middle2 <|-- GrandChild2 : public
+  GrandChild2 <|-- Great2 : public
+}
+
+note bottom of "Protected Chain"
+  Protected: Chain continues
+  All descendants can access
+end note
+
+note bottom of "Private Chain"
+  Private: Chain stops
+  Only Middle2 can access
+end note
+
+@enduml

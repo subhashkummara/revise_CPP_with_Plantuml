@@ -1,0 +1,67 @@
+@startuml Pointer_Reference_In_Classes
+!theme plain
+
+title Pointers & References in Class Design
+
+class "Safe Class Design" as Safe {
+  - int* data
+  + Safe(int val)
+  + ~Safe()
+  + int* getData()
+  + int& getRef()
+}
+
+note right of Safe
+  **Constructor:**
+  data = new int(val);
+  
+  **Destructor:**
+  delete data;
+  
+  **Return Pointer:**
+  return data; ✅ Safe
+  
+  **Return Reference:**
+  return *data; ✅ Safe
+end note
+
+class "Dangerous Class Design" as Danger {
+  + int* getDangerous()
+  + int& getDanglingRef()
+}
+
+note right of Danger
+  **Returning Local:**
+  int temp = 42;
+  return &temp; ❌ DANGER!
+  
+  **Returning Local Ref:**
+  int temp = 42;
+  return temp; ❌ DANGER!
+  
+  Memory freed on return!
+end note
+
+rectangle "Memory Lifetime" {
+  card "Class Member" as cm {
+    Lives with object
+    Safe to return
+  }
+  
+  card "Local Variable" as lv {
+    Dies on function exit
+    Never return address!
+  }
+  
+  card "Static Variable" as sv {
+    Lives entire program
+    Safe to return
+  }
+  
+  card "Heap Memory" as hm {
+    Lives until delete
+    Safe but manage carefully
+  }
+}
+
+@enduml

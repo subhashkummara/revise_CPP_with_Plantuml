@@ -1,0 +1,81 @@
+@startuml Why_Virtual_Destructor
+!theme plain
+
+title Why Base Destructor MUST Be Virtual
+
+package "Problem: Non-Virtual Destructor" #pink {
+  
+  card Code1 [
+    **Code:**
+    class Base {
+      ~Base() { }  // NOT virtual
+    };
+    
+    class Derived : public Base {
+      ~Derived() { }
+    };
+    
+    Base* ptr = new Derived();
+    delete ptr;
+  ]
+  
+  card WhatHappens1 [
+    **What Happens:**
+    
+    1. Compiler sees: delete ptr
+    2. ptr is Base* (static type)
+    3. Looks for Base::~Base()
+    4. ~Base() is NOT virtual
+    5. Calls ONLY ~Base()
+    6. ~Derived() NEVER called!
+    
+    **Result: MEMORY LEAK!**
+    Derived members NOT cleaned up
+  ]
+  
+  Code1 -down-> WhatHappens1
+}
+
+package "Solution: Virtual Destructor" #lightgreen {
+  
+  card Code2 [
+    **Code:**
+    class Base {
+      virtual ~Base() { }  // Virtual!
+    };
+    
+    class Derived : public Base {
+      ~Derived() { }
+    };
+    
+    Base* ptr = new Derived();
+    delete ptr;
+  ]
+  
+  card WhatHappens2 [
+    **What Happens:**
+    
+    1. Compiler sees: delete ptr
+    2. Checks vptr in object
+    3. vptr points to Derived vtable
+    4. Calls ~Derived() first
+    5. Then calls ~Base()
+    6. Both destructors called!
+    
+    **Result: CORRECT!**
+    All memory cleaned up
+  ]
+  
+  Code2 -down-> WhatHappens2
+}
+
+note bottom
+  **Golden Rule:**
+  If class has ANY virtual function,
+  destructor MUST be virtual!
+  
+  Otherwise: Memory leak when deleting
+  through base pointer
+end note
+
+@enduml

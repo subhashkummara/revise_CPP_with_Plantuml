@@ -1,0 +1,84 @@
+@startuml Illegal_Trade_Scenarios
+!theme plain
+
+title What Happens During "Illegal Trade" (Use-After-Free)
+
+rectangle "Memory State After delete ptr" {
+  
+  rectangle "ptr (Stack)" #lightyellow {
+    card "ptr = 0x5000\n(Old dealership address)" as ptrvar
+  }
+  
+  rectangle "0x5000 (Heap)" {
+    
+    package "Scenario 1: Empty Lot" #pink {
+      card "❌ UNMAPPED\nMemory returned to OS" as s1
+      
+      note right
+        **ptr visits empty lot:**
+        *ptr = 10;
+        
+        **Result:**
+        OS: "Access violation!"
+        Segmentation Fault
+        Core dumped
+        
+        **Analogy:**
+        Visiting demolished building
+        Police stop you
+      end note
+    }
+    
+    package "Scenario 2: New Tenant" #orange {
+      card "⚠️ REUSED\nNew data here" as s2
+      
+      note right
+        **ptr visits wrong business:**
+        *ptr = 10;
+        
+        **Result:**
+        Overwrites SOMEONE ELSE'S data!
+        Silent corruption
+        Program continues (dangerous!)
+        
+        **Analogy:**
+        Walking into Pizza Shop
+        Trying to sell cars
+        Confusing everyone
+      end note
+    }
+    
+    package "Scenario 3: Zombie State" #yellow {
+      card "⚠️ UNDEFINED\nGarbage data" as s3
+      
+      note right
+        **ptr trades with ghost:**
+        x = *ptr;
+        
+        **Result:**
+        Gets random garbage value
+        Uses wrong data
+        Crash much later
+        
+        **Analogy:**
+        Talking to empty building
+        Gets random echoes
+        Acts on nonsense
+      end note
+    }
+  }
+  
+  ptrvar -down-> s1
+  ptrvar -down-> s2
+  ptrvar -down-> s3
+}
+
+note bottom
+  **All are UNDEFINED BEHAVIOR**
+  Could crash, corrupt, or appear to work
+  
+  **Solution: ptr = nullptr**
+  Clearly marks "No dealership"
+end note
+
+@enduml

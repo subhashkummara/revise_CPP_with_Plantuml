@@ -1,0 +1,47 @@
+@startuml Memory_Size_Mismatch
+!theme plain
+
+title Memory Size Mismatch Problem
+
+rectangle "Heap Memory" {
+  
+  package "new Base() allocates" #lightblue {
+    card "0x5000: a = 0" as a
+    card "0x5004: b = 0" as b
+    card "0x5008: x = 0" as x
+    card "0x500C: y = 0" as y
+    
+    note bottom
+      **Total: 16 bytes**
+      Base object only
+    end note
+  }
+  
+  package "derived* expects" #pink {
+    card "0x5000: a" as da
+    card "0x5004: b" as db
+    card "0x5008: x" as dx
+    card "0x500C: y" as dy
+    card "0x5010: c" as dc
+    card "0x5014: d" as dd
+    card "0x5018: p" as dp
+    card "0x501C: q" as dq
+    
+    note bottom
+      **Total: 32 bytes**
+      Full derived object
+    end note
+  }
+}
+
+note right of dc
+  **DANGER ZONE!**
+  These don't exist!
+  0x5010 - 0x501F
+  not allocated!
+  
+  If obj->p is accessed:
+  Reads garbage memory!
+end note
+
+@enduml

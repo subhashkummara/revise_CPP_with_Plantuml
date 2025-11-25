@@ -1,0 +1,42 @@
+@startuml CPP_Classes_Part4
+!theme plain
+
+title Pointer Casting Rules
+
+card Upcasting [
+  **Upcasting (Safe)**
+  Base* = new Derived()
+  
+  Always safe
+  Implicit conversion
+  Access Base members only
+]
+
+card Downcasting [
+  **Downcasting (Unsafe)**
+  Derived* = new Base()
+  
+  Compilation ERROR
+  Object too small
+  Would crash
+]
+
+card SafeDowncast [
+  **Safe Downcasting**
+  dynamic_cast<Derived*>(basePtr)
+  
+  Runtime type check
+  Returns nullptr if invalid
+  Requires virtual functions
+]
+
+Upcasting -down-> Downcasting
+Downcasting -down-> SafeDowncast
+
+note bottom
+  Rule: Can point UP (to base)
+  Cannot point DOWN (to derived)
+  unless using dynamic_cast
+end note
+
+@enduml

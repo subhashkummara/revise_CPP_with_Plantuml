@@ -1,0 +1,75 @@
+@startuml Class_Return_Types
+!theme plain
+
+title Returning Pointers/References from Class Methods
+
+class findTheSolution {
+  - int result[2]
+  + int* getPointer()
+  + int& getReference(int idx)
+  + int getValue(int idx)
+}
+
+rectangle "Return Pointer to Member Array" {
+  card "Method 1: Return Pointer" as m1 {
+    int* getPointer() {
+      return result;
+    }
+  }
+  
+  note right of m1
+    ✅ Safe - result is class member
+    Lives with object
+    Caller gets: int* ptr
+  end note
+}
+
+rectangle "Return Reference to Array Element" {
+  card "Method 2: Return Reference" as m2 {
+    int& getReference(int idx) {
+      return result[idx];
+    }
+  }
+  
+  note right of m2
+    ✅ Safe - result is class member
+    Can modify: getReference(0) = 10;
+    Caller gets: int& ref
+  end note
+}
+
+rectangle "Return Value (Copy)" {
+  card "Method 3: Return by Value" as m3 {
+    int getValue(int idx) {
+      return result[idx];
+    }
+  }
+  
+  note right of m3
+    ✅ Always safe - copy
+    Cannot modify original
+    Caller gets: int val
+  end note
+}
+
+rectangle "DANGER ZONE" {
+  card "❌ Never Do This" as danger {
+    int* getDangerous() {
+      int local = 42;
+      return &local; // ❌
+    }
+    
+    int& getBadRef() {
+      int temp = 10;
+      return temp; // ❌
+    }
+  }
+  
+  note right of danger
+    Local variables destroyed!
+    Returns garbage address
+    SEGFAULT at runtime
+  end note
+}
+
+@enduml

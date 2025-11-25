@@ -1,0 +1,26 @@
+@startuml Inheritance_Flow
+!theme plain
+
+title How Data Flows Through Inheritance
+
+|Protected Inheritance|
+start
+:Base has protected data;
+:Middle inherits protected;
+note right: data becomes protected in Middle
+:GrandChild inherits public;
+note right: data stays protected
+#lightgreen:GrandChild CAN access data;
+stop
+
+|Private Inheritance|
+start
+:Base has protected data;
+:Middle inherits private;
+note right: data becomes private in Middle
+:GrandChild inherits public;
+note right: data is hidden (private in Middle)
+#pink:GrandChild CANNOT access data;
+stop
+
+@enduml

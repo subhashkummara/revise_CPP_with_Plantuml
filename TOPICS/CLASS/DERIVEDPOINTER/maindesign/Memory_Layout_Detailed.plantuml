@@ -1,0 +1,106 @@
+@startuml Memory_Layout_Detailed
+!theme plain
+
+title Detailed Memory Layouts - All Scenarios
+
+package "Scenario 1: No Inheritance" #lightblue {
+  card "Simple Class" {
+    class MyClass {
+      int a, b, c;
+    }
+    
+    **Stack:**
+    obj: [a][b][c]
+    Size: 12 bytes
+    
+    **Heap:**
+    ptr→[a][b][c]
+    Size: 12 bytes
+  }
+}
+
+package "Scenario 2: Non-Virtual Inheritance" #lightyellow {
+  card "Base + Derived" {
+    class Base {
+      int a, b;
+    }
+    class Derived : Base {
+      int c, d;
+    }
+    
+    **Memory:**
+    derived obj:
+    [a][b][c][d]
+    Size: 16 bytes
+    
+    **No vtable**
+    **Static binding**
+  }
+}
+
+package "Scenario 3: Virtual Functions" #lightgreen {
+  card "With Virtual" {
+    class Base {
+      virtual void f();
+      int a, b;
+    }
+    
+    **Memory (64-bit):**
+    [vptr][a][b][padding]
+    Size: 16 bytes
+    
+    **vtable:**
+    [type_info][~Base][f]
+    
+    **Overhead: 8 bytes**
+  }
+}
+
+package "Scenario 4: Virtual Inheritance" #pink {
+  card "Diamond Problem Solution" {
+    **Memory:**
+    [vptr_derived]
+    [derived_data]
+    [vptr_base]
+    [base_data]
+    
+    **Complex layout**
+    **More overhead**
+    **Solves diamond problem**
+  }
+}
+
+package "Scenario 5: Abstract Class" #orange {
+  card "Pure Virtual" {
+    class Abstract {
+      virtual void f() = 0;
+      int data;
+    }
+    
+    **Cannot create:**
+    Abstract obj;  // ❌ Error
+    
+    **Can create:**
+    Abstract* ptr = new Concrete();  // ✅
+    
+    **Memory (Concrete):**
+    [vptr][data][concrete_data]
+  }
+}
+
+package "Scenario 6: Multiple Inheritance" #lavender {
+  card "Multiple Bases" {
+    class D : B1, B2 {
+    }
+    
+    **Memory:**
+    [vptr_B1][B1_data]
+    [vptr_B2][B2_data]
+    [D_data]
+    
+    **Multiple vtables!**
+    **Pointer adjustment needed**
+  }
+}
+
+@enduml

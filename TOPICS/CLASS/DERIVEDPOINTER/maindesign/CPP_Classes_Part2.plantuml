@@ -1,0 +1,44 @@
+@startuml CPP_Classes_Part2
+!theme plain
+
+title C++ Virtual Functions & Memory Layout
+
+package "Polymorphism" #lightgreen {
+  
+  class NonVirtual {
+    + void method()
+  }
+  note right: No vtable, static binding
+  
+  class WithVirtual {
+    + virtual void method()
+  }
+  note right: Has vtable, dynamic binding
+  
+  class PureVirtual {
+    + virtual void method() = 0
+  }
+  note right: Abstract, cannot instantiate
+  
+  NonVirtual -down-> WithVirtual
+  WithVirtual -down-> PureVirtual
+}
+
+package "Memory Layouts" #pink {
+  card Layout1 [
+    **Without Virtual:**
+    Base: a b x y (16 bytes)
+    Derived: a b x y c d p q (32 bytes)
+  ]
+  
+  card Layout2 [
+    **With Virtual:**
+    Base: vptr a b x y (24 bytes)
+    Derived: vptr a b x y c d p q (40 bytes)
+    vptr points to vtable
+  ]
+  
+  Layout1 -down-> Layout2
+}
+
+@enduml

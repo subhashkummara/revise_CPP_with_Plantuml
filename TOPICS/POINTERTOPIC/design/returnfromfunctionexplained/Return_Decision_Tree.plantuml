@@ -1,0 +1,75 @@
+@startuml Return_Decision_Tree
+!theme plain
+
+title Should You Return This Pointer/Reference?
+
+start
+
+:Want to return pointer;
+
+if (What type?) then (Local variable)
+  #red:**❌ NEVER!**;
+  note right
+    int* bad() {
+      int x = 10;
+      return &x; // WRONG!
+    }
+    Local destroyed on return
+  end note
+  stop
+  
+elseif (Class member)
+  if (Object outlives caller?) then (yes)
+    #green:**✅ SAFE!**;
+    note right
+      class C {
+        int data;
+        int* get() {
+          return &data; // OK
+        }
+      };
+    end note
+    stop
+  else (no)
+    #red:**❌ DANGER!**;
+    note right
+      C().get(); // WRONG!
+      Temporary object dies
+    end note
+    stop
+  endif
+  
+elseif (Static variable)
+  #green:**✅ SAFE!**;
+  note right
+    int* get() {
+      static int x = 10;
+      return &x; // OK
+    }
+  end note
+  stop
+  
+elseif (Heap memory)
+  #yellow:**✅ SAFE*\n(caller must delete)**;
+  note right
+    int* create() {
+      return new int(10);
+    }
+    // Caller:
+    int* p = create();
+    delete p; // Must!
+  end note
+  stop
+  
+elseif (Parameter ref/ptr)
+  #lightblue:**✅ Usually safe**;
+  note right
+    int* pass(int* p) {
+      return p; // OK
+    }
+  end note
+  stop
+  
+endif
+
+@enduml

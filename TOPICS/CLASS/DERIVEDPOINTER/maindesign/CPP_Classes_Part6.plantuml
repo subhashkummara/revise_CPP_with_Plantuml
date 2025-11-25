@@ -1,0 +1,29 @@
+@startuml CPP_Classes_Part6
+!theme plain
+
+title Abstract & Interface Classes
+
+class AbstractClass {
+  + virtual void pureMethod() = 0
+  + void regularMethod()
+  + int data
+}
+note right: Cannot instantiate
+
+class Interface {
+  + virtual void m1() = 0
+  + virtual void m2() = 0
+  + virtual ~Interface() = 0
+}
+note right: No data, all pure virtual
+
+class ConcreteClass {
+  + void pureMethod() override
+  + void regularMethod()
+}
+note right: Can instantiate
+
+AbstractClass <|-- ConcreteClass
+Interface <|-- ConcreteClass
+
+@enduml

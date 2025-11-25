@@ -1,0 +1,65 @@
+@startuml Return_Comparison
+!theme plain
+
+title Return Types: Safe vs Unsafe
+
+left to right direction
+
+rectangle "❌ UNSAFE TO RETURN" #pink {
+  card "Local Variable" as unsafe1 {
+    **int* bad() {**
+      int x = 10;
+      return &x;  // ❌
+    **}**
+    
+    Dies on return!
+  }
+  
+  card "Local Reference" as unsafe2 {
+    **int& bad() {**
+      int x = 10;
+      return x;  // ❌
+    **}**
+    
+    Dies on return!
+  }
+  
+  card "Temp Object Member" as unsafe3 {
+    **obj.getData();**
+    **// obj dies immediately**
+    
+    MyClass().get();  // ❌
+  }
+}
+
+rectangle "✅ SAFE TO RETURN" #lightgreen {
+  card "Class Member" as safe1 {
+    **class C {**
+      int data;
+      int* get() {
+        return &data;  // ✅
+      }
+    **};**
+    
+    Lives with object
+  }
+  
+  card "Static Variable" as safe2 {
+    **int* get() {**
+      static int x = 10;
+      return &x;  // ✅
+    **}**
+    
+    Lives entire program
+  }
+  
+  card "Heap Memory" as safe3 {
+    **int* create() {**
+      return new int(10);  // ✅
+    **}**
+    
+    Caller must delete!
+  }
+}
+
+@enduml

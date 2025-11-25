@@ -1,0 +1,42 @@
+@startuml Why_Not_Possible
+!theme plain
+
+title Why derived* obj = new Base() Fails
+
+package "What You're Trying To Do" #pink {
+  
+  card "new Base()" as base {
+    **Base Object (16 bytes)**
+    ----
+    a (private): 4 bytes
+    b (private): 4 bytes
+    x (public): 4 bytes
+    y (public): 4 bytes
+  }
+  
+  card "derived* obj" as ptr {
+    **Expects derived Object (32 bytes)**
+    ----
+    Needs all Base members (16 bytes)
+    PLUS derived members (16 bytes)
+  }
+  
+  ptr -down-> base: Points to
+  
+  note bottom #red
+    **ERROR: Invalid conversion!**
+    
+    Base object is TOO SMALL!
+    Only 16 bytes allocated
+    
+    derived* expects 32 bytes:
+    • Base part: a,b,x,y (16 bytes)
+    • derived part: c,d,p,q (16 bytes)
+    
+    If obj->p is called:
+    Would access unallocated memory!
+    CRASH or garbage data!
+  end note
+}
+
+@enduml

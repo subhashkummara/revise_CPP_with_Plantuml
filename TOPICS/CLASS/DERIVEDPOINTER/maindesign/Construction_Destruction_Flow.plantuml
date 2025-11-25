@@ -1,0 +1,81 @@
+@startuml Construction_Destruction_Flow
+!theme plain
+
+title Complete Construction & Destruction Flow
+
+|Creation|
+start
+
+:new derived();
+
+partition "Construction Phase" {
+  
+  :Allocate memory;
+  note right: Heap allocator reserves space
+  
+  :Call Base constructor;
+  
+  partition "Base Constructor" #lightgreen {
+    :Initialize vptr to Base vtable;
+    :Initialize Base members;
+    :Execute Base constructor body;
+  }
+  
+  :Call derived constructor;
+  
+  partition "derived Constructor" #lightblue {
+    :Update vptr to derived vtable;
+    :Initialize derived members;
+    :Execute derived constructor body;
+  }
+  
+  :Return pointer;
+}
+
+:Object ready to use;
+
+|Destruction|
+
+:delete obj;
+
+partition "Destruction Phase" {
+  
+  :Check vptr;
+  note right
+    vptr points to derived vtable
+    So call derived destructor
+  end note
+  
+  :Call derived destructor;
+  
+  partition "derived Destructor" #lightblue {
+    :Execute derived destructor body;
+    :Cleanup derived members;
+    :Update vptr to Base vtable;
+  }
+  
+  :Call Base destructor;
+  
+  partition "Base Destructor" #lightgreen {
+    :Execute Base destructor body;
+    :Cleanup Base members;
+  }
+  
+  :Free memory;
+  note right: Heap allocator releases memory
+}
+
+stop
+
+note right
+  **CRITICAL RULES:**
+  
+  Construction: Base → Derived
+  Destruction: Derived → Base (REVERSE!)
+  
+  Base destructor MUST be virtual
+  Otherwise only Base destructor called
+  = MEMORY LEAK!
+end note
+
+@enduml

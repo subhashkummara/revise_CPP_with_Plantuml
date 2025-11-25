@@ -1,0 +1,103 @@
+@startuml Complete_Example_Code
+!theme plain
+
+title Complete Working Example - All Concepts Applied
+
+class Animal {
+  # string name
+  # int age
+  
+  + Animal(string n, int a)
+  + virtual ~Animal()
+  + virtual void makeSound() = 0
+  + virtual void move() = 0
+  + string getName() const
+  + int getAge() const
+}
+
+class Dog {
+  - string breed
+  
+  + Dog(string n, int a, string b)
+  + ~Dog() override
+  + void makeSound() override
+  + void move() override
+  + void fetch()
+}
+
+class Cat {
+  - int lives
+  
+  + Cat(string n, int a)
+  + ~Cat() override
+  + void makeSound() override
+  + void move() override
+  + void climb()
+}
+
+class Bird {
+  - double wingspan
+  
+  + Bird(string n, int a, double w)
+  + ~Bird() override
+  + void makeSound() override
+  + void move() override
+  + void fly()
+}
+
+Animal <|-- Dog
+Animal <|-- Cat
+Animal <|-- Bird
+
+note right of Animal
+  **Abstract Base Class:**
+  • Cannot instantiate Animal directly
+  • makeSound() and move() are pure virtual
+  • Destructor is virtual (CRITICAL!)
+  • Has data members (name, age)
+  
+  **Memory (derived class):**
+  [vptr][name][age][derived_members]
+  
+  **vtable:**
+  [type_info][~Derived][makeSound][move]
+end note
+
+note bottom of Dog
+  **Usage Example:**
+  
+  // ✅ Correct polymorphism
+  Animal* pets[3];
+  pets[0] = new Dog("Buddy", 3, "Labrador");
+  pets[1] = new Cat("Whiskers", 5);
+  pets[2] = new Bird("Tweety", 1, 15.5);
+  
+  // Polymorphic calls
+  for (int i = 0; i < 3; i++) {
+    pets[i]->makeSound();  // Calls correct version
+    pets[i]->move();       // Calls correct version
+  }
+  
+  // ✅ Safe downcasting
+  Dog* dog = dynamic_cast<Dog*>(pets[0]);
+  if (dog) {
+    dog->fetch();  // Dog-specific method
+  }
+  
+  // ✅ Proper cleanup
+  for (int i = 0; i < 3; i++) {
+    delete pets[i];  // Calls correct destructor
+  }
+  
+  **What happens in memory:**
+  
+  Dog object (40 bytes on 64-bit):
+  [vptr: 8][name: 32][age: 4][breed: 32]
+  
+  Destruction order:
+  1. ~Dog() - cleanup breed
+  2. ~Animal() - cleanup name, age
+  3. Free memory
+end note
+
+@enduml
